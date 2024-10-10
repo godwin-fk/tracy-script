@@ -51,7 +51,7 @@ class Main:
         df_db2 = df_db2.drop(columns=['status', 'comments'])
 
         # Perform join on 'entity_id(load_id)'
-        merged_df = pd.merge(df_db1, df_db2, on='load_id', how='inner')
+        merged_df = pd.merge(df_db1, df_db2, on='load_id', how='left')
         
         # Drop duplicates if any
         merged_df = merged_df.drop_duplicates()
@@ -59,10 +59,13 @@ class Main:
         return merged_df
 
     def save_to_csv(self):
-        filename = f'/Users/godwin.j/Documents/fourkites/tracy_script/files/tracy_{self.current_date}.csv'
-        self.df.to_csv(filename, index=False)
-        print(f"Merged Data has been saved to {filename}.")
-        return filename
+        # Save the merged data to a CSV file
+        temp_dir = f'{os.path.dirname(os.path.abspath(__name__))}/files/'
+        os.makedirs(temp_dir, exist_ok=True)
+        file_path = f"{temp_dir}tracy_{self.current_date}.csv"
+        self.df.to_csv(file_path, index=False)
+        print(f"Merged Data has been saved to {file_path}.")
+        return file_path
     
     def format_and_save_df(self, filename):
         # Rename the columns
