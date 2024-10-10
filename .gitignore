@@ -1,0 +1,6 @@
+# Ignore all files in this directory
+.env
+__pycache__/
+/tracy*
+/script.py
+/files
