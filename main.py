@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os
+import os,re
 import psycopg2
 import pandas as pd
 import datetime
@@ -24,20 +24,26 @@ class Main:
         finally:
             if conn:
                 conn.close()
+                
+    def extract_fourkites_alert(self,alert):
+        match = re.search(r'FourKites Alert:(.*)', str(alert))
+        return match.group(1).strip() if match else alert
    
     def process_data(self, df_db1, df_db2):
-        '''add columns and merge dataframes.'''
+        df_db1['date'] = self.current_date
         # Convert 'start_time' and 'end_time' to datetime to avoid errors
         df_db1['start_time'] = pd.to_datetime(df_db1['start_time'], errors='coerce')
         df_db1['end_time'] = pd.to_datetime(df_db1['end_time'], errors='coerce')
         
         # Group by 'entity_id' and fill missing values with the correct start time
         df_db1['start_time'] = df_db1.groupby('load_id')['start_time'].transform(lambda x: x.ffill())
-         
-        # Additional logics to create new columns based on the existing data
-        df_db1['date'] = self.current_date
         
         df_db1['response_time'] = df_db1['end_time'] - df_db1['start_time']
+        df_db1['response_time'] = df_db1['response_time'].apply(lambda x: x if x >= pd.Timedelta(0) else 'NaN')
+        
+        df_db1['Alert'] = df_db1['Alert'].apply(self.extract_fourkites_alert)
+        
+        df_db1['Raw Response'] = df_db1['Raw Response'].str.replace('Raw message:', '', regex=False)
         
         df_db2['reminder'] = df_db2.apply(
             lambda row: 'Y' if row['status'] == 'response_received' and 'Escalation triggered' in row['comments'] else None,
@@ -50,11 +56,12 @@ class Main:
         df_db1 = df_db1.drop(columns=['start_time', 'end_time',])
         df_db2 = df_db2.drop(columns=['status', 'comments'])
 
-        # Perform join on 'entity_id(load_id)'
-        merged_df = pd.merge(df_db1, df_db2, on='load_id', how='left')
+        # Perform inner join on 'entity_id(load_id) and shipper_id'
+        merged_df = pd.merge(df_db1, df_db2, on=['load_id', 'shipper_id'], how='inner')
         
         # Drop duplicates if any
         merged_df = merged_df.drop_duplicates()
+        merged_df = merged_df.fillna('')
         
         return merged_df
 
@@ -81,9 +88,8 @@ class Main:
         })
         
         # Rearrange the columns in the desired order
-        self.df = self.df[['Date', 'Load Number', 'Shipper', 'Carrier', 'Workflow', 'Response Time', 'Goal', 'Updated data points on FK', 'Reminder', 'Escalated']]
+        self.df = self.df[['Date', 'Load Number', 'Shipper', 'Carrier', 'Workflow', 'Alert', 'Response Time', 'Raw Response', 'Goal', 'Updated data points on FK','Reminder', 'Escalated']]
         
-        # Save the updated DataFrame to a CSV file
         self.df.to_csv(filename, index=False)
         print(f"Final Data has been saved to {filename}.")
         
@@ -91,16 +97,26 @@ class Main:
         """Fetch, process, and save the data."""
         # Fetch data from both databases
         df_db1 = self.fetch_data(self.db1_url, query_db1)
+
         df_db2 = self.fetch_data(self.db2_url, query_db2)
 
         # Process and merge the data
         self.df = self.process_data(df_db1, df_db2)
 
-        # Save the merged data to CSV and get the filename
+        # Save the merged data to CSV and get the filename before updating carrier names
         filename = self.save_to_csv()
         
         carrier_updater = CarrierUpdater(filename)
-        self.df = carrier_updater.update_carrier_names()
+        
+        # Get shipment numbers from the DataFrame
+        shipment_numbers = self.df['load_id'].tolist()
+        shipment_numbers = [str(x) for x in shipment_numbers]
+        
+        # Fetch carrier names from FourKites API
+        load_responses = carrier_updater.search_shipments_with_pagination(shipment_numbers, 'smithfield-foods', 'graph_id')
+        self.df = carrier_updater.update_carrier_name(load_responses)
+
+        # Format and Save the updated DataFrame to a CSV file
         self.format_and_save_df(filename)
 
 
