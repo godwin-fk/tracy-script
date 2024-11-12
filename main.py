@@ -104,7 +104,7 @@ class Main:
         self.df['Start Date'] = self.df['Start Date'].dt.date
         self.df['End Date'] = self.df['End Date'].dt.date
         self.df.reset_index(drop=True, inplace=True)
-        
+
         self.df.to_csv(filename, index=False)
         print(f"Final Data has been saved to {filename}.")
         
