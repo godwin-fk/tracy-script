@@ -22,7 +22,7 @@ query_db1 = '''
         agentic_logger t1
     WHERE
         (t1.entity_type = 'Load' or t1.entity_type = 'Shipment')
-        AND DATE(t1.created_at) = '2024-10-23'
+        AND DATE(t1.created_at) >= '2024-10-28' and DATE(t1.created_at) <= '2024-11-08'
     GROUP BY 
         t1.entity_id, t1.shipper_id, t1.workflow_identifier, t1.status;
 
@@ -38,7 +38,7 @@ query_db2 = '''
         milestones t2
     WHERE
         t2.entity_type = 'Load'
-        AND DATE(t2.created_at) = '2024-10-23'
+        AND DATE(t2.created_at) >= '2024-10-28' and DATE(t2.created_at) <= '2024-11-08'
     GROUP BY
         t2.entity_id, t2.status; 
 '''
