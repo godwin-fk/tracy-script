@@ -3,6 +3,7 @@ import os,re
 import psycopg2
 import pandas as pd
 import datetime
+import re
 from queries import query_db1, query_db2  
 from api import CarrierUpdater
 from dotenv import load_dotenv
@@ -104,7 +105,16 @@ class Main:
         self.df['Start Date'] = self.df['Start Date'].dt.date
         self.df['End Date'] = self.df['End Date'].dt.date
         self.df.reset_index(drop=True, inplace=True)
-
+        # Convert Response Time to minutes
+        def convert_to_minutes(response_time):
+            if pd.isna(response_time) or response_time == '':
+                return ''
+            
+            days, time_part = response_time.split(' days ')
+            hours, minutes, _ = map(int, time_part.split(':'))
+            total_minutes = int(days) * 1440 + hours * 60 + minutes  # 1440 = 24*60
+            return total_minutes
+        self.df['Response Time'] = self.df['Response Time'].apply(convert_to_minutes)
         self.df.to_csv(filename, index=False)
         print(f"Final Data has been saved to {filename}.")
         
