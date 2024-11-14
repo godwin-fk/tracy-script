@@ -9,10 +9,14 @@ from api import CarrierUpdater
 from dotenv import load_dotenv
 load_dotenv()
 class Main:
-    def __init__(self):
+    def __init__(self,shipper_id, start_date, end_date,workflow_identifier):
         self.df = None
         self.db1_url = os.getenv("AGENTICAUDITLOGS_DB_URL")
-        self.current_date = 'NOTIFIER_28thOCT_08thNOV'
+        self.shipper_id = shipper_id
+        self.start_date = start_date
+        self.end_date = end_date
+        self.workflow_identifier = workflow_identifier
+        self.current_date = f"{self.workflow_identifier}_{start_date}_{self.end_date}"
 
     def fetch_data(self, db_url, query):
         try:
@@ -54,6 +58,7 @@ class Main:
             axis=1
         )
         self.df = df
+        self.df = self.df[['Shipper', 'Carrier','Load Number','Workflow Execution Id','Alert','Raw Response','Response Time','Actions','Status','Start Time','End Time']]
         # Save the updated CSV file
         self.df.to_csv(filename, index=False)
 
@@ -65,20 +70,23 @@ class Main:
             # Rename the columns
             self.df = self.df.rename(columns={
                 'load_id': 'Load Number',
-                'request_id':'Request ID',
+                'request_id': 'Workflow Execution Id',
                 'shipper_id': 'Shipper',
                 'carrier': 'Carrier',
-                'workflow': 'Workflow',
-                'goal': 'Goal',
+                'goal': 'Status',
                 'actions' :'Actions',
                 'raw_message': 'Raw Response',
                 'alert': 'Alert',
                 'start_time': 'Start Time',
                 'end_time': 'End Time'
             })
-            
+
+            self.df['Workflow Execution Id'] = self.df.apply(
+                lambda row: f"({row['Workflow Execution Id']} , {row['Load Number']})", axis=1
+            )
+
             # Rearrange the columns in the desired order
-            self.df = self.df[['Load Number','Request ID', 'Shipper', 'Carrier', 'Workflow', 'Alert', 'Raw Response', 'Goal','Actions', 'Start Time', 'End Time']]
+            self.df = self.df[['Shipper', 'Carrier','Load Number','Workflow Execution Id','Alert','Raw Response','Actions','Status','Start Time', 'End Time']]
             
             self.df['Alert'] = self.df['Alert'].apply(self.extract_fourkites_alert)
             self.df.to_csv(filename, index=False)
@@ -97,12 +105,7 @@ class Main:
         
     def run(self):
         """Fetch, process, and save the data."""
-        # Fetch data from both databases
-        shipper_id = 'smithfield-foods'
-        start_date = '2024-10-31'
-        end_date = '2024-11-06'
-        workflow_identifier = 'notifier'
-        query = get_agentic_audit_logs_query(workflow_identifier,shipper_id, start_date, end_date)
+        query = get_agentic_audit_logs_query(self.workflow_identifier,self.shipper_id, self.start_date, self.end_date)
         self.df = self.fetch_data(self.db1_url, query)
 
         filename = self.save_to_csv()
@@ -124,5 +127,9 @@ class Main:
 
 
 if __name__ == "__main__":
-    main_process = Main()
+    shipper_id = 'smithfield-foods'
+    start_date = '2024-10-31'
+    end_date = '2024-11-06'
+    workflow_identifier = 'notifier'
+    main_process = Main(shipper_id, start_date, end_date,workflow_identifier)
     main_process.run()
