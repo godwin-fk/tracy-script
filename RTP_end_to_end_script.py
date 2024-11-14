@@ -4,7 +4,7 @@ import psycopg2
 import pandas as pd
 import datetime
 import re
-from queries import query_db1, query_db2 ,get_query_1,get_query_2
+from queries import get_agentic_audit_logs_query,get_milestones_query
 from api import CarrierUpdater
 from dotenv import load_dotenv
 load_dotenv()
@@ -117,8 +117,8 @@ class Main:
         start_date = '2024-10-31'
         end_date = '2024-11-06'
         workflow_identifier = 'ready_to_pickup'
-        query_1 = get_query_1(workflow_identifier,shipper_id, start_date, end_date)
-        query_2 = get_query_2(shipper_id, start_date, end_date)
+        query_1 = get_agentic_audit_logs_query(workflow_identifier,shipper_id, start_date, end_date)
+        query_2 = get_milestones_query(shipper_id, start_date, end_date)
         df_db1 = self.fetch_data(self.db1_url, query_1)
         df_db2 = self.fetch_data(self.db2_url, query_2)
         # here self.df is the merged data of df1 and df2

@@ -6,7 +6,7 @@
 #     ELSE NULL 
 # END AS "Comments",
 # MIN(CASE WHEN t1.comment LIKE '%Raw message%' THEN t1.created_at END) AS "Comments",
-def get_query_1(workflow_identifier,shipper_id, start_date, end_date):
+def get_agentic_audit_logs_query(workflow_identifier,shipper_id, start_date, end_date):
     query = f'''    
         SELECT  t1.entity_id AS "load_id",
                 t1.request_id as "request_id",
@@ -38,7 +38,7 @@ def get_query_1(workflow_identifier,shipper_id, start_date, end_date):
     return query
 
 
-def get_query_2(shipper_id, start_date, end_date):
+def get_milestones_query(shipper_id, start_date, end_date):
     query = f'''
     SELECT 
         t2.entity_id AS "load_id", 

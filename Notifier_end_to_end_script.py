@@ -4,7 +4,7 @@ import psycopg2
 import pandas as pd
 import datetime
 import re
-from queries import get_query_1
+from queries import get_agentic_audit_logs_query
 from api import CarrierUpdater
 from dotenv import load_dotenv
 load_dotenv()
@@ -102,7 +102,7 @@ class Main:
         start_date = '2024-10-31'
         end_date = '2024-11-06'
         workflow_identifier = 'notifier'
-        query = get_query_1(workflow_identifier,shipper_id, start_date, end_date)
+        query = get_agentic_audit_logs_query(workflow_identifier,shipper_id, start_date, end_date)
         self.df = self.fetch_data(self.db1_url, query)
 
         filename = self.save_to_csv()
