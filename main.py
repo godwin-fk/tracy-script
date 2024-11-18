@@ -3,6 +3,7 @@ import os,re
 import psycopg2
 import pandas as pd
 import datetime
+import re
 from queries import query_db1, query_db2  
 from api import CarrierUpdater
 from dotenv import load_dotenv
@@ -12,7 +13,7 @@ class Main:
         self.df = None
         self.db1_url = os.getenv("AGENTICAUDITLOGS_DB_URL")
         self.db2_url = os.getenv("MILESTONES_DB_URL")
-        self.current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        self.current_date = '28thOCT_08thNOV'
 
     def fetch_data(self, db_url, query):
         try:
@@ -30,17 +31,22 @@ class Main:
         return match.group(1).strip() if match else alert
    
     def process_data(self, df_db1, df_db2):
-        df_db1['date'] = self.current_date
+        
         # Convert 'start_time' and 'end_time' to datetime to avoid errors
         df_db1['start_time'] = pd.to_datetime(df_db1['start_time'], errors='coerce')
         df_db1['end_time'] = pd.to_datetime(df_db1['end_time'], errors='coerce')
         
         # Group by 'entity_id' and fill missing values with the correct start time
-        df_db1['start_time'] = df_db1.groupby('load_id')['start_time'].transform(lambda x: x.ffill())
+        df_db1['start_time'] = df_db1.groupby('load_id')['start_time'].transform('min')
+        df_db1['end_time'] = df_db1.groupby('load_id')['end_time'].transform('min')
         
         df_db1['response_time'] = df_db1['end_time'] - df_db1['start_time']
         df_db1['response_time'] = df_db1['response_time'].apply(lambda x: x if x >= pd.Timedelta(0) else 'NaN')
         
+        
+        df_db1['start_date'] = pd.to_datetime(df_db1['start_time'], format='%Y-%m-%d')
+        df_db1['end_date'] = pd.to_datetime(df_db1['end_time'], format='%Y-%m-%d')
+
         df_db1['Alert'] = df_db1['Alert'].apply(self.extract_fourkites_alert)
         
         df_db1['Raw Response'] = df_db1['Raw Response'].str.replace('Raw message:', '', regex=False)
@@ -77,7 +83,8 @@ class Main:
     def format_and_save_df(self, filename):
         # Rename the columns
         self.df = self.df.rename(columns={
-            'date': 'Date',
+            'start_date': 'Start Date',
+            'end_date': 'End Date',
             'load_id': 'Load Number',
             'shipper_id': 'Shipper',
             'carrier': 'Carrier',
@@ -88,8 +95,26 @@ class Main:
         })
         
         # Rearrange the columns in the desired order
-        self.df = self.df[['Date', 'Load Number', 'Shipper', 'Carrier', 'Workflow', 'Alert', 'Response Time', 'Raw Response', 'Goal', 'Updated data points on FK','Reminder', 'Escalated']]
-        
+        self.df = self.df[['Start Date','End Date', 'Load Number', 'Shipper', 'Carrier', 'Workflow', 'Alert', 'Response Time', 'Raw Response', 'Goal', 'Updated data points on FK','Reminder', 'Escalated']]
+        # Step 1: Convert Start Date and End Date to datetime and sort by Start Date in ascending order
+        self.df['Start Date'] = pd.to_datetime(self.df['Start Date'])
+        self.df['End Date'] = pd.to_datetime(self.df['End Date'])
+        self.df = self.df.sort_values(by='Start Date')
+
+        # Step 2: Remove timestamp, keeping only the date part
+        self.df['Start Date'] = self.df['Start Date'].dt.date
+        self.df['End Date'] = self.df['End Date'].dt.date
+        self.df.reset_index(drop=True, inplace=True)
+        # Convert Response Time to minutes
+        def convert_to_minutes(response_time):
+            if pd.isna(response_time) or response_time == '':
+                return ''
+            
+            days, time_part = response_time.split(' days ')
+            hours, minutes, _ = map(int, time_part.split(':'))
+            total_minutes = int(days) * 1440 + hours * 60 + minutes  # 1440 = 24*60
+            return total_minutes
+        self.df['Response Time'] = self.df['Response Time'].apply(convert_to_minutes)
         self.df.to_csv(filename, index=False)
         print(f"Final Data has been saved to {filename}.")
         
