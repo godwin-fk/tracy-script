@@ -248,13 +248,34 @@ class Main:
         self.process_logs_and_update_report(self.log_csv_path,output_file,self.output_csv_path)
 
 
+def convert_date_to_custom_format(date_str):
+    # Parse the date string
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+    
+    # Extract day and month
+    day = date_obj.day
+    month_abbr = date_obj.strftime('%b').upper()  # Get abbreviated month in uppercase
+    
+    # Determine day suffix
+    if 11 <= day <= 13:  # Handle special cases for 11th, 12th, and 13th
+        suffix = 'th'
+    else:
+        suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
+    
+    # Construct the custom format
+    custom_format = f"{day}{suffix}{month_abbr}"
+    return custom_format
+
+
 if __name__ == "__main__":
     shipper_id = 'smithfield-foods'
     start_date = '2024-10-31'
     end_date = '2024-11-06'
     workflow_identifier = 'ready_to_pickup'
-    holdover = 'Smithfield_holdover_31-7.csv'
+    holdover = 'Smithfield_holdover_31-7-1.csv'
     log_csv_path = 'email_skipped_logs.csv'
-    output_csv_path = 'updated_final_report.csv'
+    date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+    year = date_obj.year
+    output_csv_path = f'rtp_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
     main_process = Main(shipper_id, start_date, end_date,workflow_identifier,holdover,log_csv_path,output_csv_path)
     main_process.run()

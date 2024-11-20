@@ -2,14 +2,14 @@
 import os,re
 import psycopg2
 import pandas as pd
-import datetime
+from datetime import datetime
 import re
 from queries import get_agentic_audit_logs_query,get_milestones_query
 from api import CarrierUpdater
 from dotenv import load_dotenv
 load_dotenv()
 class Main:
-    def __init__(self,shipper_id, start_date, end_date,workflow_identifier):
+    def __init__(self,shipper_id, start_date, end_date,workflow_identifier,current_date):
         self.df = None
         self.db1_url = os.getenv("AGENTICAUDITLOGS_DB_URL")
         #milestones db url
@@ -18,7 +18,7 @@ class Main:
         self.start_date = start_date
         self.end_date = end_date
         self.workflow_identifier = workflow_identifier
-        self.current_date = f"{self.workflow_identifier}_{start_date}_{self.end_date}"
+        self.current_date = current_date
 
     def fetch_data(self, db_url, query):
         try:
@@ -60,7 +60,7 @@ class Main:
             axis=1
         )
         self.df = df
-        self.df = self.df[['Workflow','Shipper', 'Carrier','SCAC','Load Number','Workflow Execution Id','Alert','Raw Response','Response Time','Actions','Status','Start Time','End Time','Reminder','Escalated']]
+        self.df = self.df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','SCAC','Load Number','Alert','Raw Response','Response Time','Actions','Status','Start Time','End Time','Reminder','Escalated']]
         # Save the updated CSV file
         self.df.to_csv(filename, index=False)
 
@@ -86,13 +86,13 @@ class Main:
                 'reminder': 'Reminder',
                 'escalated': 'Escalated'
             })
-            # add - in single string
+            # TODO:add - in single string
             self.df['Workflow Execution Id'] = self.df.apply(
-                lambda row: f"({row['Workflow Execution Id']} , {row['Load Number']})", axis=1
+                lambda row: f"{row['Workflow Execution Id']}-{row['Load Number']}", axis=1
             )
 
             # Rearrange the columns in the desired order
-            self.df = self.df[['Workflow','Shipper', 'Carrier','SCAC','Load Number','Workflow Execution Id','Alert','Raw Response','Actions','Status','Start Time', 'End Time','Reminder','Escalated']]
+            self.df = self.df[['Start Time', 'End Time','Workflow Execution Id','Load Number','Shipper', 'Carrier','SCAC','Workflow','Actions','Raw Response','Status','Alert','Reminder','Escalated']]
             
             self.df['Alert'] = self.df['Alert'].apply(self.extract_fourkites_alert)
             self.df.to_csv(filename, index=False)
@@ -104,7 +104,7 @@ class Main:
         temp_dir = f'{os.path.dirname(os.path.abspath(__name__))}/files/'
         # create the directory
         os.makedirs(temp_dir, exist_ok=True)
-        file_path = f"{temp_dir}tracy_{self.current_date}.csv"
+        file_path = f"{temp_dir}{self.current_date}"
         self.df.to_csv(file_path, index=False)
         print(f"Merged Data has been saved to {file_path}.")
         return file_path
@@ -151,10 +151,31 @@ class Main:
         self.alter_change(filename)
 
 
+def convert_date_to_custom_format(date_str):
+    # Parse the date string
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+    
+    # Extract day and month
+    day = date_obj.day
+    month_abbr = date_obj.strftime('%b').upper()  # Get abbreviated month in uppercase
+    
+    # Determine day suffix
+    if 11 <= day <= 13:  # Handle special cases for 11th, 12th, and 13th
+        suffix = 'th'
+    else:
+        suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(day % 10, 'th')
+    
+    # Construct the custom format
+    custom_format = f"{day}{suffix}{month_abbr}"
+    return custom_format
+
 if __name__ == "__main__":
     shipper_id = 'smithfield-foods'
     start_date = '2024-10-31'
     end_date = '2024-11-06'
     workflow_identifier = 'notifier'
-    main_process = Main(shipper_id, start_date, end_date,workflow_identifier)
+    date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+    year = date_obj.year
+    current_date = f'notifier_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
+    main_process = Main(shipper_id, start_date, end_date,workflow_identifier,current_date)
     main_process.run()
