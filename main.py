@@ -26,30 +26,30 @@ class Main:
             if conn:
                 conn.close()
                 
-    def extract_fourkites_alert(self,alert):
-        match = re.search(r'FourKites Alert:(.*)', str(alert))
-        return match.group(1).strip() if match else alert
+    def extract_fourkites_alert(self,trigger_message):
+        match = re.search(r'FourKites Alert:(.*)', str(trigger_message))
+        return match.group(1).strip() if match else trigger_message
    
     def process_data(self, df_db1, df_db2):
         
-        # Convert 'start_time' and 'end_time' to datetime to avoid errors
-        df_db1['start_time'] = pd.to_datetime(df_db1['start_time'], errors='coerce')
-        df_db1['end_time'] = pd.to_datetime(df_db1['end_time'], errors='coerce')
+        # Convert 'trigger_timestamp' and 'response_timestamp' to datetime to avoid errors
+        df_db1['trigger_timestamp'] = pd.to_datetime(df_db1['trigger_timestamp'], errors='coerce')
+        df_db1['response_timestamp'] = pd.to_datetime(df_db1['response_timestamp'], errors='coerce')
         
         # Group by 'entity_id' and fill missing values with the correct start time
-        df_db1['start_time'] = df_db1.groupby('load_id')['start_time'].transform('min')
-        df_db1['end_time'] = df_db1.groupby('load_id')['end_time'].transform('min')
+        df_db1['trigger_timestamp'] = df_db1.groupby('load_id')['trigger_timestamp'].transform('min')
+        df_db1['response_timestamp'] = df_db1.groupby('load_id')['response_timestamp'].transform('min')
         
-        df_db1['response_time'] = df_db1['end_time'] - df_db1['start_time']
+        df_db1['response_time'] = df_db1['response_timestamp'] - df_db1['trigger_timestamp']
         df_db1['response_time'] = df_db1['response_time'].apply(lambda x: x if x >= pd.Timedelta(0) else 'NaN')
         
         
-        df_db1['start_date'] = pd.to_datetime(df_db1['start_time'], format='%Y-%m-%d')
-        df_db1['end_date'] = pd.to_datetime(df_db1['end_time'], format='%Y-%m-%d')
+        df_db1['start_date'] = pd.to_datetime(df_db1['trigger_timestamp'], format='%Y-%m-%d')
+        df_db1['end_date'] = pd.to_datetime(df_db1['response_timestamp'], format='%Y-%m-%d')
 
-        df_db1['Alert'] = df_db1['Alert'].apply(self.extract_fourkites_alert)
+        df_db1['Trigger Message'] = df_db1['Trigger Message'].apply(self.extract_fourkites_alert)
         
-        df_db1['Raw Response'] = df_db1['Raw Response'].str.replace('Raw message:', '', regex=False)
+        df_db1['Response Message'] = df_db1['Response Message'].str.replace('Raw message:', '', regex=False)
         
         df_db2['reminder'] = df_db2.apply(
             lambda row: 'Y' if row['status'] == 'response_received' and 'Escalation triggered' in row['comments'] else None,
@@ -59,7 +59,7 @@ class Main:
         df_db2.loc[df_db2['status'] == 'escalation_l2_sent', ['reminder', 'escalated']] = 'Y'
         
         # Drop unnecessary columns
-        df_db1 = df_db1.drop(columns=['start_time', 'end_time',])
+        df_db1 = df_db1.drop(columns=['trigger_timestamp', 'response_timestamp',])
         df_db2 = df_db2.drop(columns=['status', 'comments'])
 
         # Perform inner join on 'entity_id(load_id) and shipper_id'
@@ -83,29 +83,29 @@ class Main:
     def format_and_save_df(self, filename):
         # Rename the columns
         self.df = self.df.rename(columns={
-            'start_date': 'Start Date',
-            'end_date': 'End Date',
+            'start_date': 'Triggered At',
+            'end_date': 'Response At',
             'load_id': 'Load Number',
             'shipper_id': 'Shipper',
             'carrier': 'Carrier',
-            'response_time': 'Response Time',
-            'Actions': 'Updated data points on FK',
+            'response_time': 'Response Delay (mins)',
+            'actions': 'Update Actions',
             'reminder': 'Reminder',
             'escalated': 'Escalated',
         })
         
         # Rearrange the columns in the desired order
-        self.df = self.df[['Start Date','End Date', 'Load Number', 'Shipper', 'Carrier', 'Workflow', 'Alert', 'Response Time', 'Raw Response', 'Goal', 'Updated data points on FK','Reminder', 'Escalated']]
-        # Step 1: Convert Start Date and End Date to datetime and sort by Start Date in ascending order
-        self.df['Start Date'] = pd.to_datetime(self.df['Start Date'])
-        self.df['End Date'] = pd.to_datetime(self.df['End Date'])
-        self.df = self.df.sort_values(by='Start Date')
+        self.df = self.df[['Triggered At','Response At', 'Load Number', 'Shipper', 'Carrier', 'Workflow', 'Trigger Message', 'Response Delay (mins)', 'Response Message', 'Status', 'Update Actions','Reminder', 'Escalated']]
+        # Step 1: Convert Triggered At and Response At to datetime and sort by Triggered At in ascending order
+        self.df['Triggered At'] = pd.to_datetime(self.df['Triggered At'])
+        self.df['Response At'] = pd.to_datetime(self.df['Response At'])
+        self.df = self.df.sort_values(by='Triggered At')
 
         # Step 2: Remove timestamp, keeping only the date part
-        self.df['Start Date'] = self.df['Start Date'].dt.date
-        self.df['End Date'] = self.df['End Date'].dt.date
+        self.df['Triggered At'] = self.df['Triggered At'].dt.date
+        self.df['Response At'] = self.df['Response At'].dt.date
         self.df.reset_index(drop=True, inplace=True)
-        # Convert Response Time to minutes
+        # Convert Response Delay (mins) to minutes
         def convert_to_minutes(response_time):
             if pd.isna(response_time) or response_time == '':
                 return ''
@@ -114,7 +114,7 @@ class Main:
             hours, minutes, _ = map(int, time_part.split(':'))
             total_minutes = int(days) * 1440 + hours * 60 + minutes  # 1440 = 24*60
             return total_minutes
-        self.df['Response Time'] = self.df['Response Time'].apply(convert_to_minutes)
+        self.df['Response Delay (mins)'] = self.df['Response Delay (mins)'].apply(convert_to_minutes)
         self.df.to_csv(filename, index=False)
         print(f"Final Data has been saved to {filename}.")
         

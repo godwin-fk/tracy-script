@@ -8,6 +8,7 @@ from queries import get_agentic_audit_logs_query,get_milestones_query
 from api import CarrierUpdater
 from dotenv import load_dotenv
 load_dotenv()
+
 class Main:
     def __init__(self,shipper_id, start_date, end_date,workflow_identifier,current_date):
         self.df = None
@@ -31,18 +32,18 @@ class Main:
             if conn:
                 conn.close()
 
-    def clean_alert(self,alert):
-        if isinstance(alert, float):
-            alert = str(alert)
-        if not alert:
+    def clean_alert(self,trigger_message):
+        if isinstance(trigger_message, float):
+            trigger_message = str(trigger_message)
+        if not trigger_message:
             return ''
         
-        cleaned_alert = re.sub(r'Load #\d+(?:[:])?\s*', '', alert)
+        cleaned_alert = re.sub(r'Load #\d+(?:[:])?\s*', '', trigger_message)
         cleaned_alert = re.sub(r'[\\r\\n)]+$', '', cleaned_alert)
         return cleaned_alert
 
     def alter_change(self,filename):
-        self.df['Alert'] = self.df['Alert'].apply(self.clean_alert)
+        self.df['Trigger Message'] = self.df['Trigger Message'].apply(self.clean_alert)
         self.df.to_csv(filename, index=False)
 
         
@@ -50,23 +51,23 @@ class Main:
         # Load the CSV file
         df = pd.read_csv(filename)
 
-        # Convert Start Time and End Time columns to datetime format
-        df['Start Time'] = pd.to_datetime(df['Start Time'], errors='coerce')
-        df['End Time'] = pd.to_datetime(df['End Time'], errors='coerce')
+        # Convert Triggered At and Response At columns to datetime format
+        df['Triggered At'] = pd.to_datetime(df['Triggered At'], errors='coerce')
+        df['Response At'] = pd.to_datetime(df['Response At'], errors='coerce')
 
-        # Calculate Response Time in minutes
-        df['Response Time'] = df.apply(
-            lambda row: (row['End Time'] - row['Start Time']).total_seconds() / 60 if pd.notnull(row['End Time']) else None,
+        # Calculate Response Delay (mins) in minutes
+        df['Response Delay (mins)'] = df.apply(
+            lambda row: (row['Response At'] - row['Triggered At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
             axis=1
         )
         self.df = df
-        self.df = self.df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','SCAC','Load Number','Alert','Raw Response','Response Time','Actions','Status','Start Time','End Time','Reminder','Escalated']]
+        self.df = self.df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Response Delay (mins)','Actions','Status','Triggered At','Response At','Reminder','Escalated']]
         # Save the updated CSV file
         self.df.to_csv(filename, index=False)
 
-    def extract_fourkites_alert(self,alert):
-        match = re.search(r'FourKites Alert:(.*)', str(alert))
-        return match.group(1).strip() if match else alert
+    def extract_fourkites_alert(self,trigger_message):
+        match = re.search(r'FourKites Alert:(.*)', str(trigger_message))
+        return match.group(1).strip() if match else trigger_message
     
     def format_and_save_df(self,filename):
             # Rename the columns
@@ -76,13 +77,13 @@ class Main:
                 'request_id': 'Workflow Execution Id',
                 'shipper_id': 'Shipper',
                 'carrier': 'Carrier',
-                'scac' : 'SCAC',
-                'goal': 'Status',
-                'actions' :'Actions',
-                'raw_message': 'Raw Response',
-                'alert': 'Alert',
-                'start_time': 'Start Time',
-                'end_time': 'End Time',
+                'scac' : 'Carrier SCAC',
+                'status': 'Status',
+                'actions' :'Update Actions',
+                'response_message': 'Response Message',
+                'trigger_message': 'Trigger Message',
+                'trigger_timestamp': 'Triggered At',
+                'response_timestamp': 'Response At',
                 'reminder': 'Reminder',
                 'escalated': 'Escalated'
             })
@@ -92,9 +93,9 @@ class Main:
             )
 
             # Rearrange the columns in the desired order
-            self.df = self.df[['Start Time', 'End Time','Workflow Execution Id','Load Number','Shipper', 'Carrier','SCAC','Workflow','Actions','Raw Response','Status','Alert','Reminder','Escalated']]
+            self.df = self.df[['Triggered At', 'Response At','Workflow Execution Id','Load Number','Shipper', 'Carrier','Carrier SCAC','Workflow','Update Actions','Response Message','Status','Trigger Message','Reminder','Escalated']]
             
-            self.df['Alert'] = self.df['Alert'].apply(self.extract_fourkites_alert)
+            self.df['Trigger Message'] = self.df['Trigger Message'].apply(self.extract_fourkites_alert)
             self.df.to_csv(filename, index=False)
             print(f"Final Data has been saved to {filename}.")
 
@@ -129,7 +130,7 @@ class Main:
         query = get_agentic_audit_logs_query(self.workflow_identifier,self.shipper_id, self.start_date, self.end_date)
         self.df = self.fetch_data(self.db1_url, query)
         #milestones query
-        milestone_query = get_milestones_query(self.shipper_id, self.start_date, self.end_date)
+        milestone_query = get_milestones_query(self.shipper_id, self.df['load_id'].unique())
         df2 = self.fetch_data(self.db2_url, milestone_query)
         #merge agentic audit logs and milestones :
         self.process_data(self.df, df2)
@@ -171,8 +172,8 @@ def convert_date_to_custom_format(date_str):
 
 if __name__ == "__main__":
     shipper_id = 'smithfield-foods'
-    start_date = '2024-10-31'
-    end_date = '2024-11-06'
+    start_date = '2024-11-07'
+    end_date = '2024-11-20'
     workflow_identifier = 'notifier'
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year

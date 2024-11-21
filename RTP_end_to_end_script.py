@@ -43,13 +43,13 @@ class Main:
         # Load the CSV file
         df = pd.read_csv(filename)
 
-        # Convert Start Time and End Time columns to datetime format
-        df['Start Time'] = pd.to_datetime(df['Start Time'], errors='coerce')
-        df['End Time'] = pd.to_datetime(df['End Time'], errors='coerce')
+        # Convert Triggered At and Response At columns to datetime format
+        df['Triggered At'] = pd.to_datetime(df['Triggered At'], errors='coerce')
+        df['Response At'] = pd.to_datetime(df['Response At'], errors='coerce')
 
-        # Calculate Response Time in minutes
-        df['Response Time'] = df.apply(
-            lambda row: (row['End Time'] - row['Start Time']).total_seconds() / 60 if pd.notnull(row['End Time']) else None,
+        # Calculate Response Delay (mins) in minutes
+        df['Response Delay (mins)'] = df.apply(
+            lambda row: (row['Response At'] - row['Triggered At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
             axis=1
         )
         # Save the updated CSV file
@@ -62,22 +62,22 @@ class Main:
             'request_id':'Request ID',
             'shipper_id': 'Shipper',
             'carrier': 'Carrier',
-            'scac' : 'SCAC',
+            'scac' : 'Carrier SCAC',
             'workflow': 'Workflow',
-            'goal': 'Goal',
-            'raw_message': 'Raw Response',
-            'alert': 'Alert',
-            'start_time': 'Start Time',
-            'end_time': 'End Time',
-            'actions': 'Updated data points on FK',
+            'status': 'Status',
+            'response_message': 'Response Message',
+            'trigger_message': 'Trigger Message',
+            'trigger_timestamp': 'Triggered At',
+            'response_timestamp': 'Response At',
+            'actions': 'Update Actions',
             'reminder': 'Reminder',
             'escalated': 'Escalated'
         })
         # Rearrange the columns in the desired order
-        self.df = self.df[['Load Number','Request ID', 'Shipper', 'Carrier','SCAC', 'Workflow','Goal','Raw Response', 'Alert','Start Time','End Time','Updated data points on FK','Reminder', 'Escalated']]
-        # TODO: sort by start_time and load_id , use both fields to sort
-        self.df['Start Time'] = pd.to_datetime(self.df['Start Time'])
-        self.df=self.df.sort_values(by=['Start Time', 'Load Number'])
+        self.df = self.df[['Load Number','Request ID', 'Shipper', 'Carrier','Carrier SCAC', 'Workflow','Status','Response Message', 'Trigger Message','Triggered At','Response At','Update Actions','Reminder', 'Escalated']]
+        # TODO: sort by trigger_timestamp and load_id , use both fields to sort
+        self.df['Triggered At'] = pd.to_datetime(self.df['Triggered At'])
+        self.df=self.df.sort_values(by=['Triggered At', 'Load Number'])
         self.df.to_csv(filename, index=False)
         print(f"Final Data has been saved to {filename}.")
 
@@ -91,13 +91,13 @@ class Main:
         print(f"Merged Data has been saved to {file_path}.")
         return file_path
 
-    def extract_fourkites_alert(self,alert):
-        match = re.search(r'FourKites Alert:(.*)', str(alert))
-        return match.group(1).strip() if match else alert
+    def extract_fourkites_alert(self,trigger_message):
+        match = re.search(r'FourKites Alert:(.*)', str(trigger_message))
+        return match.group(1).strip() if match else trigger_message
     
     def process_data(self, df_db1, df_db2):
-        # only alert value is extracted from the DF-1 alert column
-        df_db1['alert'] = df_db1['alert'].apply(self.extract_fourkites_alert)
+        # only trigger_message value is extracted from the DF-1 trigger_message column
+        df_db1['trigger_message'] = df_db1['trigger_message'].apply(self.extract_fourkites_alert)
         df_db2['reminder'] = df_db2.apply(
             lambda row: 'Y' if row['status'] == 'response_received' and 'Escalation triggered' in row['comments'] else None,
             axis=1
@@ -138,7 +138,7 @@ class Main:
         df['NOTES/COMMENTS'] = df.apply(
             lambda row: (
                 'Email sent and no response processed'
-                if row['Workflow'] == 'ready_to_pickup' and pd.isnull(row['Updated data points on FK'])
+                if row['Workflow'] == 'ready_to_pickup' and pd.isnull(row['Update Actions'])
                 else 'Email sent and response processed'
                 if row['Workflow'] == 'ready_to_pickup'
                 else 'Email not sent'
@@ -224,9 +224,11 @@ class Main:
         """Fetch, process, and save the data."""
         # Fetch data from both databases
         query_1 = get_agentic_audit_logs_query(self.workflow_identifier,self.shipper_id, self.start_date, self.end_date)
-        query_2 = get_milestones_query(self.shipper_id, self.start_date, self.end_date)
         df_db1 = self.fetch_data(self.db1_url, query_1)
+
+        query_2 = get_milestones_query(self.shipper_id, df_db1['load_id'].unique())
         df_db2 = self.fetch_data(self.db2_url, query_2)
+
         # here self.df is the merged data of df1 and df2
         self.process_data(df_db1, df_db2)
         # save to file: 
