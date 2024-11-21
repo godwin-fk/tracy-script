@@ -120,7 +120,7 @@ class Main:
         
         # Drop unnecessary columns
         df_db2 = df_db2.drop(columns=['status', 'comments'])
-        self.df = pd.merge(df1, df_db2, on=['load_id', 'shipper_id'], how='inner')
+        self.df = pd.merge(df1, df_db2, on=['load_id', 'shipper_id'], how='left')
         self.df = self.df.drop_duplicates()
         self.df = self.df.fillna('')
 

@@ -108,7 +108,7 @@ class Main:
 
         # Perform inner join on 'entity_id(load_id) and shipper_id'
         # TODO: merge over source ID instead of load_id
-        merged_df= pd.merge(df_db1, df_db2, on=['load_id'], how='inner')
+        merged_df= pd.merge(df_db1, df_db2, on=['load_id'], how='left')
 
         merged_df = merged_df.drop(columns=["shipper_id_y"]).rename(columns={"shipper_id_x": "shipper_id"})
         
