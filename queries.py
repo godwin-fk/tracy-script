@@ -1,5 +1,8 @@
+import datetime
 
 def get_agentic_audit_logs_query(workflow_identifier,shipper_id, start_date, end_date):
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d') + datetime.timedelta(days=1) # Adjusting for the 24hrs present in the end date we want to query
+
     query = f'''
             SELECT t1.entity_id AS "load_id",
                 t1.request_id as "request_id",
@@ -39,7 +42,9 @@ def get_agentic_audit_logs_query(workflow_identifier,shipper_id, start_date, end
     return query
 
 
-def get_milestones_query(shipper_id, load_ids):
+def get_milestones_query(shipper_id, workflow_identifier, start_date, end_date):
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d') + datetime.timedelta(days=1)
+
     query = f'''
             SELECT
                 t2.entity_id AS "load_id",
@@ -50,7 +55,9 @@ def get_milestones_query(shipper_id, load_ids):
                 milestones t2
             WHERE
                 t2.entity_type = 'Load'
-                AND t2.entity_id in ({load_ids}.join(','))
+                AND t2.created_at >= '{start_date}'
+                AND t2.created_at < '{end_date}'
+                AND t2.workflow_id = '{workflow_identifier}'
                 AND t2.shipper_id = '{shipper_id}'
             GROUP BY
                 t2.entity_id, t2.status, t2.shipper_id;

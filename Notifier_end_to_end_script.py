@@ -130,7 +130,7 @@ class Main:
         query = get_agentic_audit_logs_query(self.workflow_identifier,self.shipper_id, self.start_date, self.end_date)
         self.df = self.fetch_data(self.db1_url, query)
         #milestones query
-        milestone_query = get_milestones_query(self.shipper_id, self.df['load_id'].unique())
+        milestone_query = get_milestones_query(self.shipper_id, self.workflow_identifier, self.start_date, self.end_date))
         df2 = self.fetch_data(self.db2_url, milestone_query)
         #merge agentic audit logs and milestones :
         self.process_data(self.df, df2)
