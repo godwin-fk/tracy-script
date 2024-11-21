@@ -1,11 +1,10 @@
-
-
 import pandas as pd
 from openpyxl import load_workbook
 
 def replace_master_data(file_path, df, output_file_path=None):
     """
-    Replace all data in the 'Master Data' sheet with a pandas DataFrame, while keeping other sheets intact.
+    Replace all data in the 'Master Data' sheet with a pandas DataFrame, 
+    while keeping other sheets intact, and place 'Master Data' as the first tab.
 
     :param file_path: Path to the existing Excel file.
     :param df: Pandas DataFrame containing the new data to replace in the 'Master Data' sheet.
@@ -21,7 +20,7 @@ def replace_master_data(file_path, df, output_file_path=None):
         if 'master data' in workbook.sheetnames:
             del workbook['master data']
         
-        # Create a new sheet for 'Master Data'
+        # Create a new sheet for 'master data'
         master_data_sheet = workbook.create_sheet('master data')
         
         # Write DataFrame content to the new sheet
@@ -33,6 +32,9 @@ def replace_master_data(file_path, df, output_file_path=None):
         for col_idx, column_name in enumerate(df.columns, start=1):
             master_data_sheet.cell(row=1, column=col_idx, value=column_name)
         
+        # Reorder sheets to make 'master data' the first sheet
+        workbook._sheets.insert(0, workbook._sheets.pop(workbook._sheets.index(master_data_sheet)))
+        
         # Save the workbook
         workbook.save(save_path)
         
@@ -42,12 +44,11 @@ def replace_master_data(file_path, df, output_file_path=None):
         print(f"An error occurred: {e}")
 
 # Example usage
-file_path = "workflow-template.xlsx"  # Input Excel file
+file_path = "/Users/bhanu.teja/tracy-script/report-template/notifier-template.xlsx"  # Input Excel file
 output_file_path = None  # Optional: Path to save the updated file (None means overwrite the original)
 
 # Create DataFrame from a CSV file
-csv_file_path = "workflow.csv"  # Path to the CSV file
+csv_file_path = "/Users/bhanu.teja/tracy-script/files/notifier_report_31stOCT_6thNOV2024.csv"  # Path to the CSV file
 df = pd.read_csv(csv_file_path)
 
 replace_master_data(file_path, df, output_file_path)
-
