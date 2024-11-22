@@ -31,25 +31,25 @@ class CarrierUpdater:
         except Exception as e:
             raise Exception(f"Failed to get {shipper_id} shipment details. Error: {str(e)}") 
              
-    def update_carrier_info(self,load_responses):
-        for load_details in load_responses:
-            load_id = load_details.get("loadNumber", "")
-            print('The load deatils: ',load_details.get("carrier", {}))
-            carrier_name = load_details.get("carrier", {}).get("name", "")
-            scac = load_details.get("carrier", {}).get("id", "")  # Extract SCAC
-            self.carrier_info_dict[int(load_id)] = {
-                "carrier": carrier_name,
-                "scac": scac
-            }
-            print(load_id, " ->> ", {"carrier": carrier_name, "scac": scac})
-        print(len(self.carrier_info_dict), "Loads Identified")
-        self.df['carrier'] = self.df['load_id'].map(
-            lambda load_id: self.carrier_info_dict.get(load_id, {}).get('carrier', "")
-        )
-        self.df['scac'] = self.df['load_id'].map(
-            lambda load_id: self.carrier_info_dict.get(load_id, {}).get('scac', "")
-        )
-        # self.df['carrier']=''
-        # self.df['scac']=''
+    def update_carrier_info(self):
+        # for load_details in load_responses:
+        #     load_id = load_details.get("loadNumber", "")
+        #     print('The load deatils: ',load_details.get("carrier", {}))
+        #     carrier_name = load_details.get("carrier", {}).get("name", "")
+        #     scac = load_details.get("carrier", {}).get("id", "")  # Extract SCAC
+        #     self.carrier_info_dict[int(load_id)] = {
+        #         "carrier": carrier_name,
+        #         "scac": scac
+        #     }
+        #     print(load_id, " ->> ", {"carrier": carrier_name, "scac": scac})
+        # print(len(self.carrier_info_dict), "Loads Identified")
+        # self.df['carrier'] = self.df['load_id'].map(
+        #     lambda load_id: self.carrier_info_dict.get(load_id, {}).get('carrier', "")
+        # )
+        # self.df['scac'] = self.df['load_id'].map(
+        #     lambda load_id: self.carrier_info_dict.get(load_id, {}).get('scac', "")
+        # )
+        self.df['carrier']=''
+        self.df['scac']=''
 
         return self.df

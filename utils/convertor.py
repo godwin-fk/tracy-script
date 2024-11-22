@@ -33,6 +33,6 @@ def clean_excel(file_path: str, output_path: str):
     print(f"Cleaned Excel file saved to: {output_path}")
 
 # Example usage
-input_file = "/Users/bhanu.teja/tracy-script/utils/Merged file (7).xlsx" 
+input_file = "/Users/bhanu.teja/tracy-script/utils/Merged file (8).xlsx" 
 output_file = "/Users/bhanu.teja/tracy-script/utils/output_data.xlsx"  
 clean_excel(input_file, output_file)

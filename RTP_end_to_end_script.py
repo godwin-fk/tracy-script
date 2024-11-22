@@ -280,8 +280,8 @@ class Main:
         shipment_numbers = self.df['load_id'].tolist()
         shipment_numbers = [str(x) for x in shipment_numbers]
 
-        load_responses = carrier_updater.search_shipments_with_pagination(shipment_numbers, shipper_id, 'graph_id')
-        self.df = carrier_updater.update_carrier_info(load_responses)
+        #load_responses = carrier_updater.search_shipments_with_pagination(shipment_numbers, shipper_id, 'graph_id')
+        self.df = carrier_updater.update_carrier_info()
 
         # Format and Save the updated DataFrame to a CSV file
         self.format_and_save_df(filename)
@@ -312,10 +312,10 @@ def convert_date_to_custom_format(date_str):
 
 if __name__ == "__main__":
     shipper_id = 'smithfield-foods'
-    start_date = '2024-11-07'
+    start_date = '2024-10-31'
     end_date = '2024-11-20'
     workflow_identifier = 'ready_to_pickup'
-    holdover = 'smithfield_holdover_7th-20thNOV2024.csv'
+    holdover = 'smithfield-holdover-report-31stOCT-20thNov.csv'
     log_csv_path = 'email_skipped_merged.csv'
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year
