@@ -189,6 +189,8 @@ class Main:
                         print('The Load_number: ',load_number)
                         # Parse the date
                         def parse_date(date_str):
+                                date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+                                return date_obj.strftime('%Y-%m-%d')
                                 try:
                                     # Attempt to parse 'Nov-05' (month-day)
                                     return datetime.strptime(date_str, '%b-%d')
@@ -196,12 +198,12 @@ class Main:
                                     # If the above fails, try parsing '7-Nov' (day-month)
                                     return datetime.strptime(date_str, '%d-%b')
                                                         
-                        start_date = parse_date(row['DATE'])
+                        start_date = parse_date(row['Triggered At'])
                         # Add the current year
-                        start_date = start_date.replace(year=datetime.now().year)
+                        # start_date = start_date.replace(year=datetime.now().year)
 
                         # Format the date as 'YYYY-MM-DD'
-                        start_date = start_date.strftime('%Y-%m-%d')
+                        # start_date = start_date.strftime('%Y-%m-%d')
                         print('The Start_date: ',start_date)
                         if load_number in load_map:
                             print('The load matched')

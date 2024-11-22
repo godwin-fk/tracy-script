@@ -57,7 +57,7 @@ class Main:
 
         # Calculate Response Delay (mins) in minutes
         df['Response Delay (mins)'] = df.apply(
-            lambda row: int((row['Response At'] - row['Enquiry Sent At']).total_seconds() / 60) if pd.notnull(row['Response At']) else None,
+            lambda row: (row['Response At'] - row['Enquiry Sent At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
             axis=1
         )
         self.df = df
@@ -128,12 +128,12 @@ class Main:
         requests_processed = set()
         rows_to_remove = set()
         for index, row in self.df.iterrows():
-            if not pd.isnull(row['enquiry_sent_at']) and (row['enquiry_sent_at'] < row['trigger_timestamp'] or (row['enquiry_sent_at'] - row['trigger_timestamp']).dt.total_seconds() > 60) :
+            if not pd.isnull(row['enquiry_sent_at']) and (row['enquiry_sent_at'] < row['trigger_timestamp'] or (row['enquiry_sent_at'] - row['trigger_timestamp']).total_seconds() > 120) :
                 rows_to_remove.add(index)
                 self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
                 self.df.at[index, 'enquiry_sent_at'] = None
             else:
-                requests_processed.add(self.df.at[index, 'workflow_exec_id'])
+                requests_processed.add(row['workflow_exec_id'])
                 if not pd.isnull(row['enquiry_sent_at']):
                     self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
 
@@ -142,8 +142,12 @@ class Main:
                 requests_processed.add(row['workflow_exec_id'])
                 rows_to_remove.remove(index)
 
-        self.df = self.df.drop(index=rows_to_remove).reset_index(drop=True)
-        self.df = self.df.drop_duplicates()
+        for index, row in self.df.iterrows():
+            if index in rows_to_remove:
+                self.df.at[index, 'status'] = 'MARKED_TO_REMOVED'
+
+        # self.df = self.df.drop(index=rows_to_remove).reset_index(drop=True)
+        # self.df = self.df.drop_duplicates()
         self.df = self.df.fillna('')
 
 
