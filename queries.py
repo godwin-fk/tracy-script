@@ -50,7 +50,8 @@ def get_milestones_query(shipper_id, workflow_identifier, start_date, end_date):
                 t2.entity_id AS "load_id",
                 t2.shipper_id,
                 t2.status AS "status",
-                STRING_AGG(t2.comments, '; ') AS "comments"
+                STRING_AGG(t2.comments, '; ') AS "comments",
+                t2.created_at AS "enquiry_sent_at"
             FROM
                 milestones t2
             WHERE

@@ -115,12 +115,15 @@ class Main:
             lambda row: 'Y' if row['status'] == 'response_received' and 'Escalation triggered' in row['comments'] else None,
             axis=1
         )
-        
+
         df_db2.loc[df_db2['status'] == 'escalation_l2_sent', ['reminder', 'escalated']] = 'Y'
-        
         # Drop unnecessary columns
         df_db2 = df_db2.drop(columns=['status', 'comments'])
-        self.df = pd.merge(df1, df_db2, on=['load_id', 'shipper_id'], how='left')
+        self.df = pd.merge(df1, df_db2, on=['load_id', 'shipper_id'], how='inner')
+
+        # update status column to TRIGGER_SKIPPED if mail_sent_at is before trigger_timestamp or enquiry_sent_at is null
+        self.df.loc[(self.df['enquiry_sent_at'].isnull()) | (self.df['enquiry_sent_at'] < self.df['trigger_timestamp']), 'status'] = 'TRIGGER_SKIPPED'
+
         self.df = self.df.drop_duplicates()
         self.df = self.df.fillna('')
 
@@ -130,7 +133,7 @@ class Main:
         query = get_agentic_audit_logs_query(self.workflow_identifier,self.shipper_id, self.start_date, self.end_date)
         self.df = self.fetch_data(self.db1_url, query)
         #milestones query
-        milestone_query = get_milestones_query(self.shipper_id, self.workflow_identifier, self.start_date, self.end_date))
+        milestone_query = get_milestones_query(self.shipper_id, self.workflow_identifier, self.start_date, self.end_date)
         df2 = self.fetch_data(self.db2_url, milestone_query)
         #merge agentic audit logs and milestones :
         self.process_data(self.df, df2)
