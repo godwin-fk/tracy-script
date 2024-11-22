@@ -128,18 +128,18 @@ class Main:
         requests_processed = set()
         rows_to_remove = set()
         for index, row in self.df.iterrows():
-            if not self.df['enquiry_sent_at'].isnull() and (self.df['enquiry_sent_at'] < self.df['trigger_timestamp'] or (self.df['enquiry_sent_at'] - self.df['trigger_timestamp']).dt.total_seconds() > 60) :
+            if not pd.isnull(row['enquiry_sent_at']) and (row['enquiry_sent_at'] < row['trigger_timestamp'] or (row['enquiry_sent_at'] - row['trigger_timestamp']).dt.total_seconds() > 60) :
                 rows_to_remove.add(index)
                 self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
                 self.df.at[index, 'enquiry_sent_at'] = None
             else:
                 requests_processed.add(self.df.at[index, 'workflow_execution_id'])
-                if self.df['enquiry_sent_at'].isnull():
+                if not pd.isnull(row['enquiry_sent_at']):
                     self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
 
         for index, row in self.df.iterrows():
-            if self.df.at[index, 'workflow_execution_id'] not in requests_processed:
-                requests_processed.add(self.df.at[index, 'workflow_execution_id'])
+            if row['workflow_execution_id'] not in requests_processed:
+                requests_processed.add(row['workflow_execution_id'])
                 rows_to_remove.remove(index)
 
         self.df = self.df.drop(index=rows_to_remove).reset_index(drop=True)
