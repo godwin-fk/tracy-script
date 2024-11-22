@@ -37,6 +37,7 @@ def get_agentic_audit_logs_query(workflow_identifier,shipper_id, start_date, end
                 AND t1.request_id IN (select distinct request_id from agentic_logger where created_at >= '{start_date}' and created_at < '{end_date}' AND request_id is not null)
                 AND t1.shipper_id='{shipper_id}'
                 AND t1.workflow_identifier = '{workflow_identifier}'
+                AND t1.action = 'FETCHED_CARRIER_SCAC'
             ORDER BY t1.created_at ASC;
         '''
 

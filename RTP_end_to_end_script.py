@@ -49,11 +49,11 @@ class Main:
 
         # Calculate Response Delay (mins) in minutes
         df['Response Delay (mins)'] = df.apply(
-            lambda row: int((row['Response At'] - row['Enquiry Sent At']).total_seconds() / 60) if pd.notnull(row['Response At']) else None,
+            lambda row: (row['Response At'] - row['Enquiry Sent At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
             axis=1
         )
         df = df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
-        self.df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
+        # self.df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
        
         # Save the updated CSV file
         df.to_csv(filename, index=False)
@@ -108,7 +108,7 @@ class Main:
         # Drop unnecessary columns
         df_db2 = df_db2.drop(columns=['status', 'comments'])
 
-        merged_df= pd.merge(df_db1, df_db2, on=['load_id'], how='left')
+        self.df= pd.merge(df_db1, df_db2, on=['load_id'], how='left')
 
         self.df['enquiry_sent_at'] = pd.to_datetime(self.df['enquiry_sent_at'])
         self.df['trigger_timestamp'] = pd.to_datetime(self.df['trigger_timestamp'])
@@ -137,16 +137,31 @@ class Main:
                 rows_to_remove.remove(index)
 
         self.df = self.df.drop(index=rows_to_remove).reset_index(drop=True)
-        merged_df = merged_df.drop(columns=["shipper_id_y"]).rename(columns={"shipper_id_x": "shipper_id"})
+        self.df = self.df.drop(columns=["shipper_id_y"]).rename(columns={"shipper_id_x": "shipper_id"})
         self.df = self.df.drop_duplicates()
-        merged_df = merged_df.fillna('')
-        self.df = merged_df
+        self.df = self.df.fillna('')
 
 
     def join(self,holdover,filename,join_column='Load Number', how='left'):
         # Load the CSV files into DataFrames
         df1 = pd.read_csv(holdover,dtype={join_column: 'Int64'})
         df2 = pd.read_csv(filename,dtype={join_column: 'Int64'})
+
+
+        requests_processed = set()
+        rows_to_remove = set()
+        for index, row in df2.iterrows():
+            if row['Status'] == 'TRIGGER_SKIPPED':
+                rows_to_remove.add(index)
+            else:
+                requests_processed.add(row['Workflow Execution Id'])
+
+        for index, row in df2.iterrows():
+            if row['Workflow Execution Id'] not in requests_processed:
+                requests_processed.add(row['Workflow Execution Id'])
+                rows_to_remove.remove(index)
+
+        df2 = df2.drop(index=rows_to_remove).reset_index(drop=True)
         df2 = df2.drop_duplicates(subset='Load Number', keep='first')
 
         # Perform the join on the specified column
@@ -172,10 +187,14 @@ class Main:
         )
         # Save the updated DataFrame back to CSV
         df.to_csv(filename, index=False)
-        print("CSV file updated successfully.")
+        print(f'CSV file updated successfully to: {filename}')
 
     def process_logs_and_update_report(self,log_csv_path, report_csv_path, output_csv_path):
         # Step 1: Read log CSV and create load_map
+        log_df = pd.read_csv(log_csv_path)
+        log_df = log_df[['load_number', 'date']]
+        log_df.to_csv(log_csv_path, index=False)
+
         load_map = {}
         with open(log_csv_path, mode='r') as log_file:
             log_reader = csv.reader(log_file)
@@ -212,28 +231,23 @@ class Main:
                         def parse_date(date_str):
                                 date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
                                 return date_obj.strftime('%Y-%m-%d')
-                                try:
-                                    # Attempt to parse 'Nov-05' (month-day)
-                                    return datetime.strptime(date_str, '%b-%d')
-                                except ValueError:
-                                    # If the above fails, try parsing '7-Nov' (day-month)
-                                    return datetime.strptime(date_str, '%d-%b')
-                                                        
-                        start_date = parse_date(row['Triggered At'])
-                        # Add the current year
-                        # start_date = start_date.replace(year=datetime.now().year)
+                            
+                        if row.get('Triggered At'):
+                            start_date = parse_date(row['Triggered At'])
+                            # Add the current year
+                            # start_date = start_date.replace(year=datetime.now().year)
 
-                        # Format the date as 'YYYY-MM-DD'
-                        # start_date = start_date.strftime('%Y-%m-%d')
-                        print('The Start_date: ',start_date)
-                        if load_number in load_map:
-                            print('The load matched')
-                            for log_date in load_map[load_number]:
-                                print('The Log_date: ',log_date)
-                                print('The Start_date: ',start_date)
-                                if log_date >= start_date:
-                                    row['NOTES/COMMENTS'] = 'Email Skipped as Expected'
-                                    break
+                            # Format the date as 'YYYY-MM-DD'
+                            # start_date = start_date.strftime('%Y-%m-%d')
+                            print('The Start_date: ',start_date)
+                            if load_number in load_map:
+                                print('The load matched')
+                                for log_date in load_map[load_number]:
+                                    print('The Log_date: ',log_date)
+                                    print('The Start_date: ',start_date)
+                                    if log_date >= start_date:
+                                        row['NOTES/COMMENTS'] = 'Email Skipped as Expected'
+                                        break
                 except ValueError as e:
                     print(f"Skipping invalid row in report CSV: {row}, Error: {e}")
                     continue
@@ -271,10 +285,10 @@ class Main:
 
         # Format and Save the updated DataFrame to a CSV file
         self.format_and_save_df(filename)
+        self.add_response_time(filename)
         output_file = self.join(self.holdover,filename)
         self.fill(output_file)
-        self.add_response_time(output_file)
-        self.process_logs_and_update_report(self.log_csv_path,output_file,self.output_csv_path)
+        # self.process_logs_and_update_report(self.log_csv_path,output_file,self.output_csv_path)
 
 
 def convert_date_to_custom_format(date_str):
@@ -301,7 +315,7 @@ if __name__ == "__main__":
     start_date = '2024-11-07'
     end_date = '2024-11-20'
     workflow_identifier = 'ready_to_pickup'
-    holdover = 'smithfield-holdover-7thNOV-20thNOV.csv'
+    holdover = 'smithfield_holdover_7th-20thNOV2024.csv'
     log_csv_path = 'email_skipped_merged.csv'
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year

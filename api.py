@@ -31,7 +31,7 @@ class CarrierUpdater:
         except Exception as e:
             raise Exception(f"Failed to get {shipper_id} shipment details. Error: {str(e)}") 
              
-    def update_carrier_info(self, load_responses):
+    def update_carrier_info(self,load_responses):
         for load_details in load_responses:
             load_id = load_details.get("loadNumber", "")
             print('The load deatils: ',load_details.get("carrier", {}))
@@ -49,4 +49,7 @@ class CarrierUpdater:
         self.df['scac'] = self.df['load_id'].map(
             lambda load_id: self.carrier_info_dict.get(load_id, {}).get('scac', "")
         )
+        # self.df['carrier']=''
+        # self.df['scac']=''
+
         return self.df

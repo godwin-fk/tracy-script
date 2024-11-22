@@ -199,7 +199,7 @@ def convert_date_to_custom_format(date_str):
 
 if __name__ == "__main__":
     shipper_id = 'smithfield-foods'
-    start_date = '2024-11-07'
+    start_date = '2024-10-31'
     end_date = '2024-11-20'
     workflow_identifier = 'notifier'
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
