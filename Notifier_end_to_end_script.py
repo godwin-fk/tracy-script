@@ -120,14 +120,29 @@ class Main:
         df_db2.loc[df_db2['status'] == 'escalation_l2_sent', ['reminder', 'escalated']] = 'Y'
         # Drop unnecessary columns
         df_db2 = df_db2.drop(columns=['status', 'comments'])
-        self.df = pd.merge(df1, df_db2, on=['load_id', 'shipper_id'], how='inner')
-        print("trigger_timestamp",self.df['trigger_timestamp'])
-        print("enquiry_sent_at",self.df['enquiry_sent_at'])
+        self.df = pd.merge(df1, df_db2, on=['load_id', 'shipper_id'], how='left')
         self.df['enquiry_sent_at'] = pd.to_datetime(self.df['enquiry_sent_at'])
         self.df['trigger_timestamp'] = pd.to_datetime(self.df['trigger_timestamp'])
-        # update status column to TRIGGER_SKIPPED if mail_sent_at is before trigger_timestamp or enquiry_sent_at is null
-        self.df.loc[(self.df['enquiry_sent_at'].isnull()) | (self.df['enquiry_sent_at'] < self.df['trigger_timestamp']), 'status'] = 'TRIGGER_SKIPPED'
 
+        # remove rows & update status as TRIGGER_SKIPPED as applicable
+        requests_processed = set()
+        rows_to_remove = set()
+        for index, row in self.df.iterrows():
+            if not self.df['enquiry_sent_at'].isnull() and (self.df['enquiry_sent_at'] < self.df['trigger_timestamp'] or (self.df['enquiry_sent_at'] - self.df['trigger_timestamp']).dt.total_seconds() > 60) :
+                rows_to_remove.add(index)
+                self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
+                self.df.at[index, 'enquiry_sent_at'] = None
+            else:
+                requests_processed.add(self.df.at[index, 'workflow_execution_id'])
+                if self.df['enquiry_sent_at'].isnull():
+                    self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
+
+        for index, row in self.df.iterrows():
+            if self.df.at[index, 'workflow_execution_id'] not in requests_processed:
+                requests_processed.add(self.df.at[index, 'workflow_execution_id'])
+                rows_to_remove.remove(index)
+
+        self.df = self.df.drop(index=rows_to_remove).reset_index(drop=True)
         self.df = self.df.drop_duplicates()
         self.df = self.df.fillna('')
 
