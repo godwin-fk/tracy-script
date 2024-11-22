@@ -74,7 +74,7 @@ class Main:
             self.df = self.df.rename(columns={
                 'workflow': 'Workflow',
                 'load_id': 'Load Number',
-                'request_id': 'Workflow Execution Id',
+                'workflow_exec_id': 'Workflow Execution Id',
                 'shipper_id': 'Shipper',
                 'carrier': 'Carrier',
                 'scac' : 'Carrier SCAC',
@@ -133,13 +133,13 @@ class Main:
                 self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
                 self.df.at[index, 'enquiry_sent_at'] = None
             else:
-                requests_processed.add(self.df.at[index, 'workflow_execution_id'])
+                requests_processed.add(self.df.at[index, 'workflow_exec_id'])
                 if not pd.isnull(row['enquiry_sent_at']):
                     self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
 
         for index, row in self.df.iterrows():
-            if row['workflow_execution_id'] not in requests_processed:
-                requests_processed.add(row['workflow_execution_id'])
+            if row['workflow_exec_id'] not in requests_processed:
+                requests_processed.add(row['workflow_exec_id'])
                 rows_to_remove.remove(index)
 
         self.df = self.df.drop(index=rows_to_remove).reset_index(drop=True)

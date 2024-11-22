@@ -53,7 +53,8 @@ class Main:
             axis=1
         )
         df = df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
-        
+        self.df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
+       
         # Save the updated CSV file
         df.to_csv(filename, index=False)
     
@@ -61,7 +62,7 @@ class Main:
         # Rename the columns
         self.df = self.df.rename(columns={
             'load_id': 'Load Number',
-            'request_id': 'Workflow Execution Id',
+            'workflow_exec_id': 'Workflow Execution Id',
             'shipper_id': 'Shipper',
             'carrier': 'Carrier',
             'scac' : 'Carrier SCAC',
@@ -76,12 +77,7 @@ class Main:
             'escalated': 'Escalated',
             'enquiry_sent_at': 'Enquiry Sent At'
         })
-        # Rearrange the columns in the desired order
-        # self.df = self.df[['Load Number','Request ID', 'Shipper', 'Carrier','Carrier SCAC', 'Workflow','Status','Response Message', 'Trigger Message','Triggered At','Response At','Update Actions','Reminder', 'Escalated']]
-        # TODO: sort by trigger_timestamp and load_id , use both fields to sort
-        self.df['Workflow Execution Id'] = self.df.apply(
-            lambda row: f"{row['Workflow Execution Id']}-{row['Load Number']}", axis=1
-        )
+
         self.df['Triggered At'] = pd.to_datetime(self.df['Triggered At'])
         self.df=self.df.sort_values(by=['Triggered At', 'Load Number'])
         self.df.to_csv(filename, index=False)

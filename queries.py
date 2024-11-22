@@ -5,7 +5,7 @@ def get_agentic_audit_logs_query(workflow_identifier,shipper_id, start_date, end
 
     query = f'''
             SELECT t1.entity_id AS "load_id",
-                t1.request_id as "request_id",
+                t1.request_id || '-' || t1.entity_id as "workflow_exec_id",
                 t1.shipper_id AS "shipper_id",
                 t1.workflow_identifier AS "workflow",
 				CASE
