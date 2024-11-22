@@ -44,14 +44,16 @@ class Main:
         df = pd.read_csv(filename)
 
         # Convert Triggered At and Response At columns to datetime format
-        df['Triggered At'] = pd.to_datetime(df['Triggered At'], errors='coerce')
+        df['Enquiry Sent At'] = pd.to_datetime(df['Enquiry Sent At'], errors='coerce')
         df['Response At'] = pd.to_datetime(df['Response At'], errors='coerce')
 
         # Calculate Response Delay (mins) in minutes
         df['Response Delay (mins)'] = df.apply(
-            lambda row: (row['Response At'] - row['Triggered At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
+            lambda row: int((row['Response At'] - row['Enquiry Sent At']).total_seconds() / 60) if pd.notnull(row['Response At']) else None,
             axis=1
         )
+        df = df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
+        
         # Save the updated CSV file
         df.to_csv(filename, index=False)
     
@@ -59,7 +61,7 @@ class Main:
         # Rename the columns
         self.df = self.df.rename(columns={
             'load_id': 'Load Number',
-            'request_id':'Request ID',
+            'request_id': 'Workflow Execution Id',
             'shipper_id': 'Shipper',
             'carrier': 'Carrier',
             'scac' : 'Carrier SCAC',
@@ -71,11 +73,15 @@ class Main:
             'response_timestamp': 'Response At',
             'actions': 'Update Actions',
             'reminder': 'Reminder',
-            'escalated': 'Escalated'
+            'escalated': 'Escalated',
+            'enquiry_sent_at': 'Enquiry Sent At'
         })
         # Rearrange the columns in the desired order
-        self.df = self.df[['Load Number','Request ID', 'Shipper', 'Carrier','Carrier SCAC', 'Workflow','Status','Response Message', 'Trigger Message','Triggered At','Response At','Update Actions','Reminder', 'Escalated']]
+        # self.df = self.df[['Load Number','Request ID', 'Shipper', 'Carrier','Carrier SCAC', 'Workflow','Status','Response Message', 'Trigger Message','Triggered At','Response At','Update Actions','Reminder', 'Escalated']]
         # TODO: sort by trigger_timestamp and load_id , use both fields to sort
+        self.df['Workflow Execution Id'] = self.df.apply(
+            lambda row: f"{row['Workflow Execution Id']}-{row['Load Number']}", axis=1
+        )
         self.df['Triggered At'] = pd.to_datetime(self.df['Triggered At'])
         self.df=self.df.sort_values(by=['Triggered At', 'Load Number'])
         self.df.to_csv(filename, index=False)
@@ -111,7 +117,9 @@ class Main:
         merged_df= pd.merge(df_db1, df_db2, on=['load_id'], how='left')
 
         merged_df = merged_df.drop(columns=["shipper_id_y"]).rename(columns={"shipper_id_x": "shipper_id"})
-        
+        merged_df['enquiry_sent_at'] = pd.to_datetime(merged_df['enquiry_sent_at'])
+        merged_df['trigger_timestamp'] = pd.to_datetime(merged_df['trigger_timestamp'])
+        merged_df.loc[(merged_df['enquiry_sent_at'].isnull()) | (merged_df['enquiry_sent_at'] < merged_df['trigger_timestamp']), 'status'] = 'TRIGGER_SKIPPED'
         # Drop duplicates if any
         merged_df = merged_df.drop_duplicates()
         merged_df = merged_df.fillna('')
@@ -271,11 +279,11 @@ def convert_date_to_custom_format(date_str):
 
 if __name__ == "__main__":
     shipper_id = 'smithfield-foods'
-    start_date = '2024-10-31'
-    end_date = '2024-11-06'
+    start_date = '2024-11-07'
+    end_date = '2024-11-20'
     workflow_identifier = 'ready_to_pickup'
-    holdover = 'Smithfield_holdover_31-7-1.csv'
-    log_csv_path = 'email_skipped_logs.csv'
+    holdover = 'smithfield-holdover-7thNOV-20thNOV.csv'
+    log_csv_path = 'email_skipped_merged.csv'
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year
     output_csv_path = f'rtp_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'

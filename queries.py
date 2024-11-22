@@ -32,7 +32,7 @@ def get_agentic_audit_logs_query(workflow_identifier,shipper_id, start_date, end
                 AND request_id IN (select distinct request_id from agentic_logger where created_at >= '{start_date}' and created_at < '{end_date}' AND request_id is not null)
                 AND shipper_id='{shipper_id}'
                 AND workflow_identifier = 'shipment_update'
-                GROUP BY request_id ,entity_id) as t2 ON (t1.entity_id = t2.entity_id AND t1.created_at < t2.response_time)
+                GROUP BY request_id ,entity_id) as t2 ON (t1.entity_id = t2.entity_id AND t1.created_at < t2.response_timestamp)
             WHERE (t1.entity_type = 'Load' or t1.entity_type = 'Shipment')
                 AND t1.request_id IN (select distinct request_id from agentic_logger where created_at >= '{start_date}' and created_at < '{end_date}' AND request_id is not null)
                 AND t1.shipper_id='{shipper_id}'
@@ -50,8 +50,8 @@ def get_milestones_query(shipper_id, workflow_identifier, start_date, end_date):
                 t2.entity_id AS "load_id",
                 t2.shipper_id,
                 t2.status AS "status",
-                STRING_AGG(t2.comments, '; ') AS "comments",
-                t2.created_at AS "enquiry_sent_at"
+                t2.comments AS "comments",
+                TO_CHAR(t2.created_at, 'YYYY-MM-DD HH24:MI:SS') as "enquiry_sent_at"
             FROM
                 milestones t2
             WHERE
@@ -60,8 +60,6 @@ def get_milestones_query(shipper_id, workflow_identifier, start_date, end_date):
                 AND t2.created_at < '{end_date}'
                 AND t2.workflow_id = '{workflow_identifier}'
                 AND t2.shipper_id = '{shipper_id}'
-            GROUP BY
-                t2.entity_id, t2.status, t2.shipper_id;
         '''
     return query
 
