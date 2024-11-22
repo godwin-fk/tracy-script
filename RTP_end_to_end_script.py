@@ -108,19 +108,40 @@ class Main:
         # Drop unnecessary columns
         df_db2 = df_db2.drop(columns=['status', 'comments'])
 
-        # Perform inner join on 'entity_id(load_id) and shipper_id'
-        # TODO: merge over source ID instead of load_id
         merged_df= pd.merge(df_db1, df_db2, on=['load_id'], how='left')
 
+        self.df['enquiry_sent_at'] = pd.to_datetime(self.df['enquiry_sent_at'])
+        self.df['trigger_timestamp'] = pd.to_datetime(self.df['trigger_timestamp'])
+
+        # remove rows & update status as TRIGGER_SKIPPED as applicable
+        requests_processed = set()
+        rows_to_remove = set()
+        for index, row in self.df.iterrows():
+            if not pd.isnull(row['enquiry_sent_at']) and (row['enquiry_sent_at'] < row['trigger_timestamp'] or (row['enquiry_sent_at'] - row['trigger_timestamp']).total_seconds() > 120) :
+                rows_to_remove.add(index)
+                self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
+                self.df.at[index, 'response_message'] = None
+                self.df.at[index, 'response_timestamp'] = None
+                self.df.at[index, 'actions'] = 'DETAILS_EXTRACTED'
+            else:
+                requests_processed.add(row['workflow_exec_id'])
+                if pd.isnull(row['enquiry_sent_at']):
+                    self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
+                    self.df.at[index, 'response_message'] = None
+                    self.df.at[index, 'response_timestamp'] = None
+                    self.df.at[index, 'actions'] = 'DETAILS_EXTRACTED'
+
+        for index, row in self.df.iterrows():
+            if row['workflow_exec_id'] not in requests_processed:
+                requests_processed.add(row['workflow_exec_id'])
+                rows_to_remove.remove(index)
+
+        self.df = self.df.drop(index=rows_to_remove).reset_index(drop=True)
         merged_df = merged_df.drop(columns=["shipper_id_y"]).rename(columns={"shipper_id_x": "shipper_id"})
-        merged_df['enquiry_sent_at'] = pd.to_datetime(merged_df['enquiry_sent_at'])
-        merged_df['trigger_timestamp'] = pd.to_datetime(merged_df['trigger_timestamp'])
-        merged_df.loc[(merged_df['enquiry_sent_at'].isnull()) | (merged_df['enquiry_sent_at'] < merged_df['trigger_timestamp']), 'status'] = 'TRIGGER_SKIPPED'
-        # Drop duplicates if any
-        merged_df = merged_df.drop_duplicates()
+        self.df = self.df.drop_duplicates()
         merged_df = merged_df.fillna('')
         self.df = merged_df
-    
+
 
     def join(self,holdover,filename,join_column='Load Number', how='left'):
         # Load the CSV files into DataFrames

@@ -147,10 +147,6 @@ class Main:
                 requests_processed.add(row['workflow_exec_id'])
                 rows_to_remove.remove(index)
 
-        for index, row in self.df.iterrows():
-            if index in rows_to_remove:
-                self.df.at[index, 'status'] = 'MARKED_TO_REMOVED'
-
         self.df = self.df.drop(index=rows_to_remove).reset_index(drop=True)
         self.df = self.df.drop_duplicates()
         self.df = self.df.fillna('')
