@@ -131,11 +131,16 @@ class Main:
             if not pd.isnull(row['enquiry_sent_at']) and (row['enquiry_sent_at'] < row['trigger_timestamp'] or (row['enquiry_sent_at'] - row['trigger_timestamp']).total_seconds() > 120) :
                 rows_to_remove.add(index)
                 self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
-                self.df.at[index, 'enquiry_sent_at'] = None
+                self.df.at[index, 'response_message'] = None
+                self.df.at[index, 'response_timestamp'] = None
+                self.df.at[index, 'actions'] = 'DETAILS_EXTRACTED'
             else:
                 requests_processed.add(row['workflow_exec_id'])
-                if not pd.isnull(row['enquiry_sent_at']):
+                if pd.isnull(row['enquiry_sent_at']):
                     self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
+                    self.df.at[index, 'response_message'] = None
+                    self.df.at[index, 'response_timestamp'] = None
+                    self.df.at[index, 'actions'] = 'DETAILS_EXTRACTED'
 
         for index, row in self.df.iterrows():
             if row['workflow_exec_id'] not in requests_processed:
@@ -146,8 +151,8 @@ class Main:
             if index in rows_to_remove:
                 self.df.at[index, 'status'] = 'MARKED_TO_REMOVED'
 
-        # self.df = self.df.drop(index=rows_to_remove).reset_index(drop=True)
-        # self.df = self.df.drop_duplicates()
+        self.df = self.df.drop(index=rows_to_remove).reset_index(drop=True)
+        self.df = self.df.drop_duplicates()
         self.df = self.df.fillna('')
 
 
