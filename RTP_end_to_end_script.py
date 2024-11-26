@@ -170,24 +170,21 @@ class Main:
         return f'{self.shipper_id}_holdover_JOIN_{self.workflow_identifier}.csv'
         
 
-    def fill(self,filename):
-        # Load the CSV file
-        
-        df = pd.read_csv(filename)
+    # Load the CSV file
+    df = pd.read_csv(filename)
 
-        df['NOTES/COMMENTS'] = df.apply(
-            lambda row: (
-                'Email sent and no response processed'
-                if row['Workflow'] == 'ready_to_pickup' and pd.isnull(row['Update Actions'])
-                else 'Email sent and response processed'
-                if row['Workflow'] == 'ready_to_pickup'
-                else 'Email not sent'
-            ),
-            axis=1
-        )
-        # Save the updated DataFrame back to CSV
-        df.to_csv(filename, index=False)
-        print(f'CSV file updated successfully to: {filename}')
+    # Update the 'NOTES/COMMENTS' column based on conditions
+    df['NOTES/COMMENTS'] = df.apply(
+        lambda row: 'Email sent and awaiting response' if row['Workflow'] == 'ready_to_pickup' and pd.isnull(row['Update Actions'])
+        else 'Email sent and response processed' if row['Workflow'] == 'ready_to_pickup' and '_UPDATED' in row['Update Actions'].upper()
+        else 'Email sent and no response processed' if row['Workflow'] == 'ready_to_pickup'
+        else 'Email not sent',
+        axis=1
+    )
+
+    # Save the updated DataFrame back to CSV
+    df.to_csv(filename, index=False)
+    print(f'CSV file updated successfully to: {filename}')
 
     def process_logs_and_update_report(self,log_csv_path, report_csv_path, output_csv_path):
         # Step 1: Read log CSV and create load_map
