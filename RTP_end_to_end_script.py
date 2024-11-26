@@ -10,7 +10,7 @@ from api import CarrierUpdater
 from dotenv import load_dotenv
 load_dotenv()
 class Main:
-    def __init__(self,shipper_id, start_date, end_date,workflow_identifier,holdover,log_csv_path,output_csv_path):
+    def __init__(self,shipper_id, start_date, end_date,workflow_identifier,holdover,log_csv_path,output_csv_path,flag):
         self.df = None
         self.db1_url = os.getenv("AGENTICAUDITLOGS_DB_URL")
         self.db2_url = os.getenv("MILESTONES_DB_URL")
@@ -22,6 +22,7 @@ class Main:
         self.log_csv_path = log_csv_path
         self.output_csv_path = output_csv_path
         self.current_date = f"{self.workflow_identifier}_{start_date}_{self.end_date}"
+        self.flag = flag
 
     def fetch_data(self, db_url, query):
         try:
@@ -52,16 +53,16 @@ class Main:
             lambda row: (row['Response At'] - row['Enquiry Sent At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
             axis=1
         )
-        df = df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
-        # self.df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
-       
+        df = df[['Load Number','CARRIER','CONTAINER ID','DESTINATION CITY','DESTINATION STATE','DD DATE','DD TIME','BILL DATE','BILL TIME','ZDLT LATE CODE','ON TIME? (Y/N)','SPLIT? (Y/N)','FRESH PRIORITY STO? (Y/N)','NOTES/COMMENTS','Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
+    
+        self.df = df
         # Save the updated CSV file
-        df.to_csv(filename, index=False)
+        self.df.to_csv(filename, index=False)
     
     def format_and_save_df(self, filename):
         # Rename the columns
+
         self.df = self.df.rename(columns={
-            'load_id': 'Load Number',
             'workflow_exec_id': 'Workflow Execution Id',
             'shipper_id': 'Shipper',
             'carrier': 'Carrier',
@@ -145,46 +146,50 @@ class Main:
     def join(self,holdover,filename,join_column='Load Number', how='left'):
         # Load the CSV files into DataFrames
         df1 = pd.read_csv(holdover,dtype={join_column: 'Int64'})
-        df2 = pd.read_csv(filename,dtype={join_column: 'Int64'})
+        df2 = pd.read_csv(filename,dtype={'load_id': 'Int64'})
 
 
         requests_processed = set()
         rows_to_remove = set()
         for index, row in df2.iterrows():
-            if row['Status'] == 'TRIGGER_SKIPPED':
+            if row['status'] == 'TRIGGER_SKIPPED':
                 rows_to_remove.add(index)
             else:
-                requests_processed.add(row['Workflow Execution Id'])
+                requests_processed.add(row['workflow_exec_id'])
 
         for index, row in df2.iterrows():
-            if row['Workflow Execution Id'] not in requests_processed:
-                requests_processed.add(row['Workflow Execution Id'])
+            if row['workflow_exec_id'] not in requests_processed:
+                requests_processed.add(row['workflow_exec_id'])
                 rows_to_remove.remove(index)
 
         df2 = df2.drop(index=rows_to_remove).reset_index(drop=True)
-        df2 = df2.drop_duplicates(subset='Load Number', keep='first')
+        df2 = df2.drop_duplicates(subset='load_id', keep='first')
 
         # Perform the join on the specified column
-        result = pd.merge(df1, df2, on=join_column, how=how)
+        result = pd.merge(df1, df2, left_on=join_column, right_on='load_id', how=how)
+        # result = pd.merge(df1, df2, on=join_column, how=how)
         result.to_csv(f'{self.shipper_id}_holdover_JOIN_{self.workflow_identifier}.csv', index=False)
+        print('The result is saved')
+        self.df = result
         return f'{self.shipper_id}_holdover_JOIN_{self.workflow_identifier}.csv'
         
+    def fill(self,filename):
+        # Load the CSV file
+        df = pd.read_csv(filename)
 
-    # Load the CSV file
-    df = pd.read_csv(filename)
+        # Update the 'NOTES/COMMENTS' column based on conditions
+        df['NOTES/COMMENTS'] = df.apply(
+            lambda row: 'Email not sent' if pd.isnull(row['Enquiry Sent At'])
+            else 'Email sent and awaiting response' if pd.isnull(row['Response At'])
+            else 'Email sent and response processed' if '_UPDATED' in row['Update Actions'].upper()
+            else 'Email sent and response not processed',
+            axis=1
+        )
 
-    # Update the 'NOTES/COMMENTS' column based on conditions
-    df['NOTES/COMMENTS'] = df.apply(
-        lambda row: 'Email not sent' if pd.isnull(row['Enquiry Sent At'])
-        else 'Email sent and awaiting response' if pd.isnull(row['Response At'])
-        else 'Email sent and response processed' if '_UPDATED' in row['Update Actions'].upper()
-        else 'Email sent and response not processed'
-        axis=1
-    )
-
-    # Save the updated DataFrame back to CSV
-    df.to_csv(filename, index=False)
-    print(f'CSV file updated successfully to: {filename}')
+        # Save the updated DataFrame back to CSV
+        self.df = df
+        self.df.to_csv(filename, index=False)
+        print(f'CSV file updated successfully to: {filename}')
 
     def process_logs_and_update_report(self,log_csv_path, report_csv_path, output_csv_path):
         # Step 1: Read log CSV and create load_map
@@ -257,7 +262,6 @@ class Main:
             writer.writerows(updated_rows)
 
 
-
     def run(self):
         """Fetch, process, and save the data."""
         # Fetch data from both databases
@@ -271,21 +275,30 @@ class Main:
         self.process_data(df_db1, df_db2)
         # save to file: 
         filename = self.save_to_csv()
-
-        carrier_updater = CarrierUpdater(filename)
-
-        shipment_numbers = self.df['load_id'].tolist()
-        shipment_numbers = [str(x) for x in shipment_numbers]
-
-        #load_responses = carrier_updater.search_shipments_with_pagination(shipment_numbers, shipper_id, 'graph_id')
-        self.df = carrier_updater.update_carrier_info()
-
-        # Format and Save the updated DataFrame to a CSV file
-        self.format_and_save_df(filename)
-        self.add_response_time(filename)
         output_file = self.join(self.holdover,filename)
+        file_df = pd.read_csv(output_file)
+        if 'load_id' in file_df.columns:
+            file_df = file_df.drop(columns=['load_id'])
+        self.df = file_df
+        self.df.to_csv(output_file, index=False)
+
+        # Carrier Updater based on flag : 
+        carrier_updater = CarrierUpdater(output_file)
+
+        if(self.flag):
+            shipment_numbers = self.df['Load Number'].tolist()
+            shipment_numbers = [str(x) for x in shipment_numbers]
+
+            load_responses = carrier_updater.search_shipments_with_pagination(shipment_numbers, shipper_id, 'graph_id')
+            
+        else:
+            load_responses = []
+
+        self.df = carrier_updater.update_carrier_info(load_responses)
+        # Format and Save the updated DataFrame to a CSV file
+        self.format_and_save_df(output_file)
+        self.add_response_time(output_file)
         self.fill(output_file)
-        # self.process_logs_and_update_report(self.log_csv_path,output_file,self.output_csv_path)
 
 
 def convert_date_to_custom_format(date_str):
@@ -309,13 +322,15 @@ def convert_date_to_custom_format(date_str):
 
 if __name__ == "__main__":
     shipper_id = 'smithfield-foods'
-    start_date = '2024-10-31'
-    end_date = '2024-11-20'
+    start_date = '2024-11-07'
+    end_date = '2024-11-07'
     workflow_identifier = 'ready_to_pickup'
-    holdover = 'smithfield-holdover-report-31stOCT-20thNov.csv'
+    holdover = f"smithfield-foods-holdover-{start_date}_{end_date}.csv"
+    print('The holdover: ',holdover)
     log_csv_path = 'email_skipped_merged.csv'
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year
     output_csv_path = f'rtp_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
-    main_process = Main(shipper_id, start_date, end_date,workflow_identifier,holdover,log_csv_path,output_csv_path)
+    flag=True
+    main_process = Main(shipper_id, start_date, end_date,workflow_identifier,holdover,log_csv_path,output_csv_path,flag)
     main_process.run()
