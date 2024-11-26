@@ -175,10 +175,10 @@ class Main:
 
     # Update the 'NOTES/COMMENTS' column based on conditions
     df['NOTES/COMMENTS'] = df.apply(
-        lambda row: 'Email sent and awaiting response' if row['Workflow'] == 'ready_to_pickup' and pd.isnull(row['Update Actions'])
-        else 'Email sent and response processed' if row['Workflow'] == 'ready_to_pickup' and '_UPDATED' in row['Update Actions'].upper()
-        else 'Email sent and no response processed' if row['Workflow'] == 'ready_to_pickup'
-        else 'Email not sent',
+        lambda row: 'Email not sent' if pd.isnull(row['Enquiry Sent At'])
+        else 'Email sent and awaiting response' if pd.isnull(row['Response At'])
+        else 'Email sent and response processed' if '_UPDATED' in row['Update Actions'].upper()
+        else 'Email sent and response not processed'
         axis=1
     )
 
