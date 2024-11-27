@@ -4,13 +4,13 @@ import psycopg2
 import pandas as pd
 from datetime import datetime
 import re
-from queries import get_agentic_audit_logs_query,get_milestones_query
+from queries import get_notifier_agentic_audit_logs_query,get_milestones_query
 from api import CarrierUpdater
 from dotenv import load_dotenv
 load_dotenv()
 
 class Main:
-    def __init__(self,shipper_id, start_date, end_date,workflow_identifier,current_date):
+    def __init__(self,shipper_id, start_date, end_date,workflow_identifier,current_date,flag):
         self.df = None
         self.db1_url = os.getenv("AGENTICAUDITLOGS_DB_URL")
         #milestones db url
@@ -20,6 +20,7 @@ class Main:
         self.end_date = end_date
         self.workflow_identifier = workflow_identifier
         self.current_date = current_date
+        self.flag = flag
 
     def fetch_data(self, db_url, query):
         try:
@@ -102,14 +103,14 @@ class Main:
 
 
     def save_to_csv(self):
-        # create directory path
-        temp_dir = f'{os.path.dirname(os.path.abspath(__name__))}/files/'
-        # create the directory
-        os.makedirs(temp_dir, exist_ok=True)
-        file_path = f"{temp_dir}{self.current_date}"
-        self.df.to_csv(file_path, index=False)
-        print(f"Merged Data has been saved to {file_path}.")
-        return file_path
+        # # create directory path
+        # temp_dir = f'{os.path.dirname(os.path.abspath(__name__))}/files/'
+        # # create the directory
+        # os.makedirs(temp_dir, exist_ok=True)
+        # file_path = f"./dist/{self.current_date}"
+        self.df.to_csv(self.current_date, index=False)
+        print(f"Merged Data has been saved to {self.current_date}.")
+        return self.current_date
 
     def process_data(self, df1, df_db2):
         df_db2['reminder'] = df_db2.apply(
@@ -154,24 +155,27 @@ class Main:
 
     def run(self):
         """Fetch, process, and save the data."""
-        query = get_agentic_audit_logs_query(self.workflow_identifier,self.shipper_id, self.start_date, self.end_date)
+        query = get_notifier_agentic_audit_logs_query(self.workflow_identifier,self.shipper_id, self.start_date, self.end_date)
         self.df = self.fetch_data(self.db1_url, query)
         #milestones query
         milestone_query = get_milestones_query(self.shipper_id, self.workflow_identifier, self.start_date, self.end_date)
         df2 = self.fetch_data(self.db2_url, milestone_query)
-        #merge agentic audit logs and milestones :
+        print("The df1:",self.df)
+
+        # merge agentic audit logs and milestones :
         self.process_data(self.df, df2)
         filename = self.save_to_csv()
         
         carrier_updater = CarrierUpdater(filename)
-        
-        # Get shipment numbers from the DataFrame
-        shipment_numbers = self.df['load_id'].tolist()
-        shipment_numbers = [str(x) for x in shipment_numbers]
-        
-        # Fetch carrier names from FourKites API
-        load_responses = carrier_updater.search_shipments_with_pagination(shipment_numbers, shipper_id, 'graph_id')
-        self.df = carrier_updater.update_carrier_info(load_responses)
+        if(self.flag):
+            # Get shipment numbers from the DataFrame
+            shipment_numbers = self.df['load_id'].tolist()
+            shipment_numbers = [str(x) for x in shipment_numbers]
+            # Fetch carrier names from FourKites API
+            load_responses = carrier_updater.search_shipments_with_pagination(shipment_numbers, shipper_id, 'graph_id')
+        else:
+            load_responses = []
+        self.df = carrier_updater.update_carrier_info_v2(load_responses)
 
         # Format and Save the updated DataFrame to a CSV file
         self.format_and_save_df(filename)
@@ -199,11 +203,12 @@ def convert_date_to_custom_format(date_str):
 
 if __name__ == "__main__":
     shipper_id = 'smithfield-foods'
-    start_date = '2024-10-31'
-    end_date = '2024-11-20'
+    start_date = '2024-11-07'
+    end_date = '2024-11-07'
     workflow_identifier = 'notifier'
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year
-    current_date = f'notifier_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
-    main_process = Main(shipper_id, start_date, end_date,workflow_identifier,current_date)
+    current_date = f'./dist/{shipper_id}-final-notifier_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
+    flag=False
+    main_process = Main(shipper_id, start_date, end_date,workflow_identifier,current_date,flag)
     main_process.run()

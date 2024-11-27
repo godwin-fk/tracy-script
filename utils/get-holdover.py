@@ -83,7 +83,7 @@ def fetch_holdover_reports(email_address, password, start_date, end_date, save_p
         mail.logout()
 
 
-def merge_xlsx_files(directory, output_file="merged_holdover_reports.xlsx"):
+def merge_xlsx_files(directory, output_file="../temp/merged_holdover_reports.xlsx"):
     """
     Merges all .xlsx files in the given directory into a single Excel file.
 
@@ -131,6 +131,7 @@ def clean_excel(file_path: str, output_path: str):
     - file_path: str - Path to the input Excel file.
     - output_path: str - Path to save the cleaned Excel file.
     """
+    
     # Read the Excel file
     df = pd.read_excel(file_path)
 
@@ -200,8 +201,7 @@ def convert_excel_to_csv(output_file: str, shipper_id_holdover: str, start_date:
     - end_date: str - The end date for naming the CSV file.
     """
     # Generate the output CSV file name
-    csv_filename = f"/Users/bhanu.teja/tracy-script/{shipper_id_holdover}-{start_date}_{end_date}.csv"
-    csv_filepath = os.path.join(os.path.dirname(output_file), csv_filename)
+    csv_filepath = f"../temp/{shipper_id_holdover}-{start_date}_{end_date}.csv"
     
     # Read the Excel file into a DataFrame
     df = pd.read_excel(output_file)
@@ -214,12 +214,13 @@ def convert_excel_to_csv(output_file: str, shipper_id_holdover: str, start_date:
 
 # Input credentials and other parameters
 if __name__ == "__main__":
-    email_address = "smithfield_visibility_services@fourkites.com"
-    password = "F0urKit3sR0cks"
+
+    email_address = 'smithfield_visibility_services@fourkites.com'
+    password = 'F0urKit3sR0cks'
     start_date = "2024-11-07" 
     end_date =  "2024-11-07" 
-    save_path = "/Users/bhanu.teja/tracy-script/utils/attachments"
-    output_file = "/Users/bhanu.teja/tracy-script/utils/output_data.xlsx"
+    save_path = "attachments"
+    output_file = "../temp/output_data.xlsx"
     shipper_id_holdover = 'smithfield-foods-holdover'
 
     fetch_holdover_reports(email_address, password, start_date, end_date, save_path)

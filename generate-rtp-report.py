@@ -5,12 +5,12 @@ import pandas as pd
 import csv
 from datetime import datetime
 import re
-from queries import get_agentic_audit_logs_query,get_milestones_query
+from queries import get_rtp_agentic_audit_logs_query,get_milestones_query
 from api import CarrierUpdater
 from dotenv import load_dotenv
 load_dotenv()
 class Main:
-    def __init__(self,shipper_id, start_date, end_date,workflow_identifier,holdover,log_csv_path,output_csv_path,flag):
+    def __init__(self,shipper_id, start_date, end_date,workflow_identifier,holdover,output_csv_path,flag):
         self.df = None
         self.db1_url = os.getenv("AGENTICAUDITLOGS_DB_URL")
         self.db2_url = os.getenv("MILESTONES_DB_URL")
@@ -19,7 +19,6 @@ class Main:
         self.end_date = end_date
         self.workflow_identifier = workflow_identifier
         self.holdover = holdover
-        self.log_csv_path = log_csv_path
         self.output_csv_path = output_csv_path
         self.current_date = f"{self.workflow_identifier}_{start_date}_{self.end_date}"
         self.flag = flag
@@ -34,11 +33,6 @@ class Main:
         finally:
             if conn:
                 conn.close()
-
-    def alter_change(self,filename):
-        df = pd.read_csv(filename)
-        df.to_csv(filename, index=False)
-
         
     def add_response_time(self,filename):
         # Load the CSV file
@@ -82,14 +76,10 @@ class Main:
         self.df['Triggered At'] = pd.to_datetime(self.df['Triggered At'])
         self.df=self.df.sort_values(by=['Triggered At', 'Load Number'])
         self.df.to_csv(filename, index=False)
-        print(f"Final Data has been saved to {filename}.")
+        print(f"Mapping of headers is done and saved to : {filename}.")
 
     def save_to_csv(self):
-        # create directory path
-        temp_dir = f'{os.path.dirname(os.path.abspath(__name__))}/files/'
-        # create the directory
-        os.makedirs(temp_dir, exist_ok=True)
-        file_path = f"{temp_dir}tracy_{self.current_date}.csv"
+        file_path = f"./temp/tracy_{self.current_date}.csv"
         self.df.to_csv(file_path, index=False)
         print(f"Merged Data has been saved to {file_path}.")
         return file_path
@@ -167,11 +157,11 @@ class Main:
 
         # Perform the join on the specified column
         result = pd.merge(df1, df2, left_on=join_column, right_on='load_id', how=how)
-        # result = pd.merge(df1, df2, on=join_column, how=how)
-        result.to_csv(f'{self.shipper_id}_holdover_JOIN_{self.workflow_identifier}.csv', index=False)
-        print('The result is saved')
+        # output_file = f'./dist/{self.shipper_id}-final-report-{self.start_date}_{self.end_date}.csv'
+        result.to_csv(self.output_csv_path, index=False)
+        print('The JOIN is completed')
         self.df = result
-        return f'{self.shipper_id}_holdover_JOIN_{self.workflow_identifier}.csv'
+        return self.output_csv_path
         
     def fill(self,filename):
         # Load the CSV file
@@ -189,83 +179,14 @@ class Main:
         # Save the updated DataFrame back to CSV
         self.df = df
         self.df.to_csv(filename, index=False)
-        print(f'CSV file updated successfully to: {filename}')
+        print(f'NOTES/COMMENTS updated and saved to: {filename}')
 
-    def process_logs_and_update_report(self,log_csv_path, report_csv_path, output_csv_path):
-        # Step 1: Read log CSV and create load_map
-        log_df = pd.read_csv(log_csv_path)
-        log_df = log_df[['load_number', 'date']]
-        log_df.to_csv(log_csv_path, index=False)
-
-        load_map = {}
-        with open(log_csv_path, mode='r') as log_file:
-            log_reader = csv.reader(log_file)
-            next(log_reader)  # Skip header row
-            for row in log_reader:
-                try:
-                    load_number = row[0]
-                    load_number = int(load_number)
-                    # Explicitly add the current year to avoid ambiguity
-                    date_str = f"{row[1]}-{datetime.now().year}"
-                    date = datetime.strptime(date_str, '%d-%b-%Y')
-                    formatted_date = date.strftime("%Y-%m-%d")
-                    if load_number not in load_map:
-                        load_map[load_number] = []
-                    load_map[load_number].append(formatted_date)
-                except ValueError as e:
-                    print(f"Skipping invalid row in log CSV: {row}, Error: {e}")
-                    continue
-            print('the load map: ',load_map)
-    
-        # Step 2: Read the final report and process rows
-        updated_rows = []
-        with open(report_csv_path, mode='r') as report_file:
-            report_reader = csv.DictReader(report_file)
-            fieldnames = report_reader.fieldnames
-            for row in report_reader:
-                try:
-                    if row['NOTES/COMMENTS'] == 'Email not sent':
-                        print('Inside')
-                        load_number = row['Load Number']
-                        load_number = int(float(load_number))
-                        print('The Load_number: ',load_number)
-                        # Parse the date
-                        def parse_date(date_str):
-                                date_obj = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-                                return date_obj.strftime('%Y-%m-%d')
-                            
-                        if row.get('Triggered At'):
-                            start_date = parse_date(row['Triggered At'])
-                            # Add the current year
-                            # start_date = start_date.replace(year=datetime.now().year)
-
-                            # Format the date as 'YYYY-MM-DD'
-                            # start_date = start_date.strftime('%Y-%m-%d')
-                            print('The Start_date: ',start_date)
-                            if load_number in load_map:
-                                print('The load matched')
-                                for log_date in load_map[load_number]:
-                                    print('The Log_date: ',log_date)
-                                    print('The Start_date: ',start_date)
-                                    if log_date >= start_date:
-                                        row['NOTES/COMMENTS'] = 'Email Skipped as Expected'
-                                        break
-                except ValueError as e:
-                    print(f"Skipping invalid row in report CSV: {row}, Error: {e}")
-                    continue
-                updated_rows.append(row)
-        
-        # Step 3: Write the updated rows to a new CSV
-        with open(output_csv_path, mode='w', newline='') as output_file:
-            writer = csv.DictWriter(output_file, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(updated_rows)
-
+  
 
     def run(self):
         """Fetch, process, and save the data."""
         # Fetch data from both databases
-        query_1 = get_agentic_audit_logs_query(self.workflow_identifier,self.shipper_id, self.start_date, self.end_date)
+        query_1 = get_rtp_agentic_audit_logs_query(self.workflow_identifier,self.shipper_id, self.start_date, self.end_date)
         df_db1 = self.fetch_data(self.db1_url, query_1)
 
         query_2 = get_milestones_query(self.shipper_id, self.workflow_identifier, self.start_date, self.end_date)
@@ -325,12 +246,12 @@ if __name__ == "__main__":
     start_date = '2024-11-07'
     end_date = '2024-11-07'
     workflow_identifier = 'ready_to_pickup'
-    holdover = f"smithfield-foods-holdover-{start_date}_{end_date}.csv"
+    #coming from temp folder :
+    holdover = f"./temp/{shipper_id}-holdover-{start_date}_{end_date}.csv"
     print('The holdover: ',holdover)
-    log_csv_path = 'email_skipped_merged.csv'
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year
-    output_csv_path = f'rtp_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
+    output_csv_path = f'./dist/{shipper_id}-final-rtp-report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
     flag=True
-    main_process = Main(shipper_id, start_date, end_date,workflow_identifier,holdover,log_csv_path,output_csv_path,flag)
+    main_process = Main(shipper_id, start_date, end_date,workflow_identifier,holdover,output_csv_path,flag)
     main_process.run()
