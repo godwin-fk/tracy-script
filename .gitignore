@@ -6,6 +6,6 @@ __pycache__/
 /files
 /temp
 /dist
-/utils/attachments
+/utils/attachments/*
 /venv
 /.vscode
