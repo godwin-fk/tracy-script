@@ -44,11 +44,11 @@ def replace_master_data(file_path, df, output_file_path=None):
         print(f"An error occurred: {e}")
 
 # Example usage
-file_path = "/Users/bhanu.teja/tracy-script/report-template/notifier-template.xlsx"  # Input Excel file
+file_path = "./report-template/notifier-template.xlsx"  # Input Excel file
 output_file_path = None  # Optional: Path to save the updated file (None means overwrite the original)
 
 # Create DataFrame from a CSV file
-csv_file_path = "/Users/bhanu.teja/tracy-script/files/notifier_report_31stOCT_6thNOV2024.csv"  # Path to the CSV file
+csv_file_path = "./dist/notifer-report-name"  # change to the correct notifier report name
 df = pd.read_csv(csv_file_path)
 
 replace_master_data(file_path, df, output_file_path)

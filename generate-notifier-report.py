@@ -95,19 +95,12 @@ class Main:
             )
 
             # Rearrange the columns in the desired order
-            # self.df = self.df[['Workflow Execution Id','Load Number','Shipper', 'Carrier','Carrier SCAC','Workflow','Update Actions','Response Message','Triggered At', 'Response At','Status','Trigger Message','Reminder','Escalated']]
-            
             self.df['Trigger Message'] = self.df['Trigger Message'].apply(self.extract_fourkites_alert)
             self.df.to_csv(filename, index=False)
             print(f"Final Data has been saved to {filename}.")
 
 
     def save_to_csv(self):
-        # # create directory path
-        # temp_dir = f'{os.path.dirname(os.path.abspath(__name__))}/files/'
-        # # create the directory
-        # os.makedirs(temp_dir, exist_ok=True)
-        # file_path = f"./dist/{self.current_date}"
         self.df.to_csv(self.current_date, index=False)
         print(f"Merged Data has been saved to {self.current_date}.")
         return self.current_date
@@ -160,7 +153,6 @@ class Main:
         #milestones query
         milestone_query = get_milestones_query(self.shipper_id, self.workflow_identifier, self.start_date, self.end_date)
         df2 = self.fetch_data(self.db2_url, milestone_query)
-        print("The df1:",self.df)
 
         # merge agentic audit logs and milestones :
         self.process_data(self.df, df2)
@@ -209,6 +201,6 @@ if __name__ == "__main__":
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year
     current_date = f'./dist/{shipper_id}-final-notifier_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
-    flag=False
+    flag=True
     main_process = Main(shipper_id, start_date, end_date,workflow_identifier,current_date,flag)
     main_process.run()

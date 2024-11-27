@@ -221,7 +221,8 @@ if __name__ == "__main__":
     end_date =  "2024-11-07" 
     save_path = "attachments"
     output_file = "../temp/output_data.xlsx"
-    shipper_id_holdover = 'smithfield-foods-holdover'
+    shipper_id = 'smithfield-foods'
+    shipper_id_holdover = f'{shipper_id}-holdover'
 
     fetch_holdover_reports(email_address, password, start_date, end_date, save_path)
     input_file = merge_xlsx_files(save_path)

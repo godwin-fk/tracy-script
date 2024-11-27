@@ -17,7 +17,6 @@ class CarrierUpdater:
     def search_shipments_with_pagination(self, shipment_numbers, shipper_id, graph_id):
         try:
             shipment_numbers = list(set(shipment_numbers))
-            print('the unique shipment numbers are: ',len(shipment_numbers))
             get_load_url = f'{self.tracking_service_rr}/api/v1/tracking/search?company_id={shipper_id}&show=stops'
             load_response_final = []
             with requests.Session() as session:
@@ -29,7 +28,6 @@ class CarrierUpdater:
                         failure_log = f"Failed to get carrier scac for loads: {shipment_numbers}. Error: {load_response.text}"
                         raise Exception(failure_log)
                     load_response_final.extend(load_response.json().get("loads", []))
-                print('The length of load response final is: ',len(load_response_final))
                 return load_response_final
         except Exception as e:
             raise Exception(f"Failed to get {shipper_id} shipment details. Error: {str(e)}") 
@@ -37,7 +35,6 @@ class CarrierUpdater:
     # RTP: Update carrier info
     def update_carrier_info(self,load_responses):
         if(len(load_responses) > 0):
-            print('The length of load responses are: ',len(load_responses))
             for load_details in load_responses:
                 load_id = load_details.get("loadNumber", "")
                 carrier_name = load_details.get("carrier", {}).get("name", "")
@@ -47,7 +44,6 @@ class CarrierUpdater:
                     "scac": scac
                 }
                 print(load_id, " ->> ", {"carrier": carrier_name, "scac": scac})
-            print(len(self.carrier_info_dict), "Loads Identified")
             self.df['carrier'] = self.df['Load Number'].map(
                 lambda load_id: self.carrier_info_dict.get(load_id, {}).get('carrier', "")
             )
@@ -64,7 +60,6 @@ class CarrierUpdater:
     # Notifier: Update carrier info
     def update_carrier_info_v2(self,load_responses):
         if(len(load_responses) > 0):
-            print('The length of load responses are: ',len(load_responses))
             for load_details in load_responses:
                 load_id = load_details.get("loadNumber", "")
                 carrier_name = load_details.get("carrier", {}).get("name", "")
@@ -74,7 +69,6 @@ class CarrierUpdater:
                     "scac": scac
                 }
                 print(load_id, " ->> ", {"carrier": carrier_name, "scac": scac})
-            print(len(self.carrier_info_dict), "Loads Identified")
             self.df['carrier'] = self.df['load_id'].map(
                 lambda load_id: self.carrier_info_dict.get(load_id, {}).get('carrier', "")
             )
