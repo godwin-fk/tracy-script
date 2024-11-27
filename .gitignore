@@ -4,3 +4,8 @@ __pycache__/
 /tracy*
 /script.py
 /files
+/temp
+/dist
+/utils/attachments/*
+/venv
+/.vscode
