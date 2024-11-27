@@ -4,8 +4,8 @@ import psycopg2
 import pandas as pd
 from datetime import datetime
 import re
-from queries import get_notifier_agentic_audit_logs_query,get_milestones_query
-from api import CarrierUpdater
+from utils.queries import get_notifier_agentic_audit_logs_query, get_milestones_query
+from utils.api import CarrierUpdater
 from dotenv import load_dotenv
 load_dotenv()
 

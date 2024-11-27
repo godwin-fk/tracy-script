@@ -5,8 +5,8 @@ import pandas as pd
 import csv
 from datetime import datetime
 import re
-from queries import get_rtp_agentic_audit_logs_query,get_milestones_query
-from api import CarrierUpdater
+from utils.queries import get_rtp_agentic_audit_logs_query,get_milestones_query
+from utils.api import CarrierUpdater
 from dotenv import load_dotenv
 load_dotenv()
 class Main:
