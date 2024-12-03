@@ -57,10 +57,3 @@ CREATE TABLE "workflow_audit" (
 
 CREATE INDEX idx_thread_id ON "workflow_audit" ("thread_id");
 CREATE INDEX idx_timestamp_action ON "workflow_audit" ("action_timestamp", "action_id");
-
-CREATE TABLE "workflow_enquiry" (
-  "thread_id" VARCHAR,
-  "workflow_run_id" VARCHAR
-);
-
-CREATE INDEX idx_thread_id_workflow_run_id ON "workflow_enquiry" ("thread_id", "workflow_run_id");
