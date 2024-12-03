@@ -19,24 +19,46 @@ def parse(json_file):
         steps = data.get("steps", {})
         audit_trail = []
         for step_name, step_data in steps.items():
-            if isinstance(step_data, dict) and step_name == "email_generate_event_data": 
+            if isinstance(step_data, dict):
                 step_info = steps.get(step_name, {})
-                event_data = step_info['exports']['$return_value']
-                audit_entry = {
-                    "step_id": event_data.get("id"),
-                    "step_name": step_name,
-                    "agent_id": event_data.get("agent_id"),
-                    "shipper_id": event_data.get("shipper_id"),
-                    "workflow_id": event_data.get("workflow_id"),
-                    "parent_request_id": event_data.get("parent_request_id"),
-                    # "start_time": step_info.get("start_time"),
-                    # "end_time": step_info.get("end_time"),
-                    # "status": "success" if step_info.get("status") == "completed" else "failure",
-                    # "data": step_info  # Store the entire data block as JSON
-                }
-                audit_trail.append(audit_entry)
-            else:
-                print(f"Step: {step_name} does not contain $return_value")
+                if step_name == "email_generate_event_data": 
+                    step_id = step_info.get("id",{})
+                    event_data = step_info['exports']['$return_value']
+                    audit_entry = {
+                        "step_id": step_id,
+                        "id": event_data.get("id"),
+                        "step_name": step_name,
+                        "agent_id": event_data.get("agent_id"),
+                        "shipper_id": event_data.get("shipper_id"),
+                        "workflow_id": event_data.get("workflow_id"),
+                        "parent_request_id": event_data.get("parent_request_id"),
+                        # "start_time": step_info.get("start_time"),
+                        # "end_time": step_info.get("end_time"),
+                        # "status": "success" if step_info.get("status") == "completed" else "failure",
+                        # "data": step_info  # Store the entire data block as JSON
+                    }
+                    audit_trail.append(audit_entry)
+                    # print(f"Step: {step_name}")
+                    # print(audit_entry)
+                else:
+                    step_id =  step_info.get("id",{})
+                    event_data = step_info.get("props", {}).get("event_data",{})
+                    audit_entry = {
+                        "step_id": step_id,
+                        "id": event_data.get("id"),
+                        "step_name": step_name,
+                        "agent_id": event_data.get("agent_id"),
+                        "shipper_id": event_data.get("shipper_id"),
+                        "workflow_id": event_data.get("workflow_id"),
+                        "parent_request_id": event_data.get("parent_request_id"),
+                        # "start_time": step_info.get("start_time"),
+                        # "end_time": step_info.get("end_time"),
+                        # "status": "success" if step_info.get("status") == "completed" else "failure",
+                        # "data": step_info  # Store the entire data blostep_info = steps.get(step_name, {})ck as JSON
+                    }
+                    audit_trail.append(audit_entry)
+                    # print(f"Step: {step_name}")
+                    # print(audit_entry)
         return {
             "workflow_context": workflow_info,
             "audit_trail": audit_trail
