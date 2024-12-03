@@ -52,7 +52,7 @@ CREATE TABLE "workflow_audit" (
   "data" JSONB,
 
   "action_timestamp" TIMESTAMP WITH TIME ZONE,
-  "created_at" TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  "created_at" TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
 CREATE INDEX idx_thread_id ON "workflow_audit" ("thread_id");
