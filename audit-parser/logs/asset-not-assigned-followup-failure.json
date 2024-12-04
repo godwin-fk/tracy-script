@@ -1,0 +1,436 @@
+{
+    "lock_version": 2,
+    "id": "2piT9dvqKuO19KMov8x28K0yTmt",
+    "request_id": "2piT9Zz4uHmvfh7DGXthmyl43K5",
+    "deployment_id": "d_Eksebkg3",
+    "deployment_version": 122,
+    "trigger": {
+        "exports": {
+            "event": {
+                "method": "POST",
+                "path": "/",
+                "query": {},
+                "client_ip": "54.82.232.85",
+                "url": "https://eotb87yh23xd0t7.m.pipedream.net/",
+                "headers": {
+                    "host": "eotb87yh23xd0t7.m.pipedream.net",
+                    "content-length": "19296",
+                    "accept": "application/json, text/plain, */*",
+                    "content-type": "application/json",
+                    "authorization": "Bearer TEST_TOKEN",
+                    "user-agent": "axios/1.7.8",
+                    "accept-encoding": "gzip, compress, deflate, br"
+                },
+                "body": {
+                    "trigger": {
+                        "event": {
+                            "decodedContent": "new load which doesn't have asset info\r\n\r\n*Chris Young*\r\nSr. Director, Integrations\r\nchris.young@fourkites.com <jane.smith@fourkites.com> | 773.796.5256 |\r\nwww.fourkites.com\r\n[image: FourKites | #1 Supply Chain Visibility Solution]\r\n<https://www.fourkites.com/>\r\n[image: in] <https://www.linkedin.com/company/fourkites-inc/> [image: tw]\r\n<https://twitter.com/FourKites> [image: fb]\r\n<https://www.facebook.com/FourKites> [image: g2]\r\n<https://www.g2.com/products/fourkites/reviews> [image: Gartner]\r\n<https://www.gartner.com/reviews/market/real-time-transportation-visibility-platforms/vendor/fourkites/product/fourkites>\r\n",
+                            "historyId": "45288",
+                            "id": "1938d9d7ab13b330",
+                            "internalDate": "1733247715000",
+                            "labelIds": [
+                                "UNREAD",
+                                "IMPORTANT",
+                                "CATEGORY_PERSONAL",
+                                "INBOX"
+                            ],
+                            "parsedHeaders": {
+                                "date": "Tue, 3 Dec 2024 11:41:55 -0600",
+                                "from": {
+                                    "email": "chris.young@fourkites.com",
+                                    "name": "Chris Young"
+                                },
+                                "id": "1938d9d7ab13b330",
+                                "snippet": "new load which doesn&#39;t have asset info Chris Young Sr. Director, Integrations chris.young@fourkites.com | 773.796.5256 | www.fourkites.com FourKites | #1 Supply Chain Visibility Solution in tw fb",
+                                "subject": "FourKites Alert: Load #godwin-test-8 is not assigned tracking information",
+                                "threadId": "1938d9d7ab13b330",
+                                "to": {
+                                    "email": "trac-prod@fourkites.com",
+                                    "name": "trac prod"
+                                }
+                            },
+                            "payload": {
+                                "body": {
+                                    "size": 0
+                                },
+                                "filename": "",
+                                "headers": [
+                                    {
+                                        "name": "Delivered-To",
+                                        "value": "trac-prod@fourkites.com"
+                                    },
+                                    {
+                                        "name": "Received",
+                                        "value": "by 2002:a05:7208:8088:b0:94:df23:eea6 with SMTP id k8csp4034294rbd;        Tue, 3 Dec 2024 09:42:08 -0800 (PST)"
+                                    },
+                                    {
+                                        "name": "X-Received",
+                                        "value": "by 2002:a17:902:f64d:b0:215:aae1:40f1 with SMTP id d9443c01a7336-215bcea02b3mr55622585ad.2.1733247728225;        Tue, 03 Dec 2024 09:42:08 -0800 (PST)"
+                                    },
+                                    {
+                                        "name": "ARC-Seal",
+                                        "value": "i=1; a=rsa-sha256; t=1733247728; cv=none;        d=google.com; s=arc-20240605;        b=J6aXb+LzIdDSOLs7bEDgmbia/jfM/oZZ/bpxBfobVaNQutp0q5eYZpnloN1Rpbd+dH         VuI5Kkj70GX3KzXaNJBjJt9bL9k7o80QFIOc+75liLnaNLgtdHToXsYdROZ9NFBy2CT2         teBE94AgvZLArgmCaOm+4w8Snb15r3hvKL1O5ST0XQ/NfUD7bdfuGI6ycjJQ/g3c3N+6         6ObCjTcM3TethrhuHehryfh87FT3aU+7749jsG+o+8YFZz6F0GtEBPPpFOaS4eKOyXmN         GuTeimHWdDLXH7YBl1EebrDB+OEsZG3G0Z6eEAwjF/LKA0AL5njrKcCTvi1u7z2XNEtY         RzVw=="
+                                    },
+                                    {
+                                        "name": "ARC-Message-Signature",
+                                        "value": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;        h=to:subject:message-id:date:from:mime-version:dkim-signature;        bh=1r7zwnyKUs/G3K4SvZTssEek8iP1xo496eM2qBgmOAg=;        fh=qEE5HGh8zcowppmkgQR//fRusW+Pw5HSscOBdw3KUF4=;        b=fF5vv1YVgFiEDg4GXYRNa9jUXUG6GRw1/Tp4+vVLkvLtuH+h/Leo5QR2XaIu9vAGRT         Ej+cw+JZCBiWPaxXEvVETCknEpEjdV+dZNWs2rfo4ORNjX5Nrsvb08tpZFHtHEI2La3c         bBZ3DhnRpriXCIV1Gp4ifi3XdOUYdqh4JpVL5+lYbpgbbF6IRYiPFLsyavPEtzrx8O79         MeavlJF2cIM7wGmPfzOdjKVFchBf/bSwQjujPVSkBBDynwZJCAJZIeN3BlO7fyj4tGK7         h2eW+Sz2wANmd3et10mP3vFgVO1kZFou2lcUGkRAZivkA5f1G5ut2Ssz2zZxJPtuLzLV         6E+A==;        dara=google.com"
+                                    },
+                                    {
+                                        "name": "ARC-Authentication-Results",
+                                        "value": "i=1; mx.google.com;       dkim=pass header.i=@fourkites.com header.s=google header.b=t4XJHyXQ;       spf=pass (google.com: domain of chris.young@fourkites.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=chris.young@fourkites.com;       dmarc=pass (p=QUARANTINE sp=NONE dis=NONE) header.from=fourkites.com;       dara=pass header.i=@fourkites.com"
+                                    },
+                                    {
+                                        "name": "Return-Path",
+                                        "value": "<chris.young@fourkites.com>"
+                                    },
+                                    {
+                                        "name": "Received",
+                                        "value": "from mail-sor-f65.google.com (mail-sor-f65.google.com. [209.85.220.65])        by mx.google.com with SMTPS id d9443c01a7336-215822d53cfsor44773685ad.1.2024.12.03.09.42.08        for <trac-prod@fourkites.com>        (Google Transport Security);        Tue, 03 Dec 2024 09:42:08 -0800 (PST)"
+                                    },
+                                    {
+                                        "name": "Received-SPF",
+                                        "value": "pass (google.com: domain of chris.young@fourkites.com designates 209.85.220.65 as permitted sender) client-ip=209.85.220.65;"
+                                    },
+                                    {
+                                        "name": "Authentication-Results",
+                                        "value": "mx.google.com;       dkim=pass header.i=@fourkites.com header.s=google header.b=t4XJHyXQ;       spf=pass (google.com: domain of chris.young@fourkites.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=chris.young@fourkites.com;       dmarc=pass (p=QUARANTINE sp=NONE dis=NONE) header.from=fourkites.com;       dara=pass header.i=@fourkites.com"
+                                    },
+                                    {
+                                        "name": "DKIM-Signature",
+                                        "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=fourkites.com; s=google; t=1733247727; x=1733852527; darn=fourkites.com;        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject         :date:message-id:reply-to;        bh=1r7zwnyKUs/G3K4SvZTssEek8iP1xo496eM2qBgmOAg=;        b=t4XJHyXQdvMMMa3PJ3Jr9whFJWJAgkr0zWYDMxTnTWxuv8Z+ZdhyHnufr+sFsaOXgm         asWrDpvw4u3slSxjGZIYDdRYJ/3gkFCy1RlR75X0v1I+FVb+D1RY3MKqyhhRn+32vD9e         e9sWHF/aqzfJybUcDAq/DE+0U4UP2czNYFPsGwKyDQDahHwq1L73KHlovj1SMYjGI1Na         KCePBIV0DOEx1wLZCOe1DBh/2+4AWIX31u8BE2o+m7M+moNEXFow+AfTf1l5o1XiMnP5         RKja5XDccwRmvcUe1IKQSZjwnm6zIcguwY0hM0axnEZMV/pPr9Ma1j+r7spB9Mnz+kc5         r+tA=="
+                                    },
+                                    {
+                                        "name": "X-Google-DKIM-Signature",
+                                        "value": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20230601; t=1733247727; x=1733852527;        h=to:subject:message-id:date:from:mime-version:x-gm-message-state         :from:to:cc:subject:date:message-id:reply-to;        bh=1r7zwnyKUs/G3K4SvZTssEek8iP1xo496eM2qBgmOAg=;        b=mkGXSdlx+m8cuE/hfY5Xk+gPxmBB6Qci48ht9gETARS2l4XUNmTkXUa1uImAdfrG/J         Mvb/+xPorHkCgDyy7eZPS+BAlb1k75BkuB+dbw5ZE0oQXPAH9VHOQYXVUGsH1Q87eKlx         sjzXE52qMku0+FMwYeefKkThV2J8C9DeIqrvRJe/iaRrJNuAtQKOFIeifx5aFZ3o4fHk         FwC46Y9WgkmvcLPIU6Hslicg4+2WN2Ej2gFVko3wK5tErroLoVHfSjBRmhMVns8QaEkQ         e3TaRiFM1L1mWYbD4uKxd5Crar4VoSK0sJOtnohbH3rtCxjSHbmZ3BI2mkBXDxiKTDId         Qy8A=="
+                                    },
+                                    {
+                                        "name": "X-Gm-Message-State",
+                                        "value": "AOJu0Yxpg2G6atl0PfHThdwKYHQA0XsMJO7l0XWDLn+Wb6fp2PRi90tD TsKJmKZsiAk3eNKJxf9LxFGbrjzVGiWXtaML8MOnHoBVhVpv+/OTY7g3MK2Fed8ZKnwtBUC3hY1 58vTFWW4Kp1iVv20+0OnRk3pQzcuk67yofj8JCbWqbmOjh5gTM+AlOcUc"
+                                    },
+                                    {
+                                        "name": "X-Gm-Gg",
+                                        "value": "ASbGnctibaZ2hVGrS5qY/CksfNDY0SooMHIZUPAsnWM2Pkux/VEcTT+IPaNKfAMsqsJ O8g4gz6ezjArR+17n0WOAS9beHQ2VapQ="
+                                    },
+                                    {
+                                        "name": "X-Google-Smtp-Source",
+                                        "value": "AGHT+IEVgjqy32B/tkAGvAsDJh9eAvu3vgQspOl7cXGj+QuOdXjNXEs5qoHgY4wKwWnhTZbk0xifemWI2Yrf+YnN1sY="
+                                    },
+                                    {
+                                        "name": "X-Received",
+                                        "value": "by 2002:a17:902:d489:b0:215:77f8:6c12 with SMTP id d9443c01a7336-215bd143a09mr40153825ad.51.1733247726936; Tue, 03 Dec 2024 09:42:06 -0800 (PST)"
+                                    },
+                                    {
+                                        "name": "MIME-Version",
+                                        "value": "1.0"
+                                    },
+                                    {
+                                        "name": "From",
+                                        "value": "Chris Young <chris.young@fourkites.com>"
+                                    },
+                                    {
+                                        "name": "Date",
+                                        "value": "Tue, 3 Dec 2024 11:41:55 -0600"
+                                    },
+                                    {
+                                        "name": "Message-ID",
+                                        "value": "<CAO2Gk=eydth+i5zNRCoBNoNP7n31==4hbzekQc=AzWv0ZfWqSQ@mail.gmail.com>"
+                                    },
+                                    {
+                                        "name": "Subject",
+                                        "value": "FourKites Alert: Load #godwin-test-8 is not assigned tracking information"
+                                    },
+                                    {
+                                        "name": "To",
+                                        "value": "trac prod <trac-prod@fourkites.com>"
+                                    },
+                                    {
+                                        "name": "Content-Type",
+                                        "value": "multipart/alternative; boundary=\"0000000000001295060628612f22\""
+                                    }
+                                ],
+                                "mimeType": "multipart/alternative",
+                                "partId": "",
+                                "parts": [
+                                    {
+                                        "body": {
+                                            "data": "bmV3IGxvYWQgd2hpY2ggZG9lc24ndCBoYXZlIGFzc2V0IGluZm8NCg0KKkNocmlzIFlvdW5nKg0KU3IuIERpcmVjdG9yLCBJbnRlZ3JhdGlvbnMNCmNocmlzLnlvdW5nQGZvdXJraXRlcy5jb20gPGphbmUuc21pdGhAZm91cmtpdGVzLmNvbT4gfCA3NzMuNzk2LjUyNTYgfA0Kd3d3LmZvdXJraXRlcy5jb20NCltpbWFnZTogRm91cktpdGVzIHwgIzEgU3VwcGx5IENoYWluIFZpc2liaWxpdHkgU29sdXRpb25dDQo8aHR0cHM6Ly93d3cuZm91cmtpdGVzLmNvbS8-DQpbaW1hZ2U6IGluXSA8aHR0cHM6Ly93d3cubGlua2VkaW4uY29tL2NvbXBhbnkvZm91cmtpdGVzLWluYy8-IFtpbWFnZTogdHddDQo8aHR0cHM6Ly90d2l0dGVyLmNvbS9Gb3VyS2l0ZXM-IFtpbWFnZTogZmJdDQo8aHR0cHM6Ly93d3cuZmFjZWJvb2suY29tL0ZvdXJLaXRlcz4gW2ltYWdlOiBnMl0NCjxodHRwczovL3d3dy5nMi5jb20vcHJvZHVjdHMvZm91cmtpdGVzL3Jldmlld3M-IFtpbWFnZTogR2FydG5lcl0NCjxodHRwczovL3d3dy5nYXJ0bmVyLmNvbS9yZXZpZXdzL21hcmtldC9yZWFsLXRpbWUtdHJhbnNwb3J0YXRpb24tdmlzaWJpbGl0eS1wbGF0Zm9ybXMvdmVuZG9yL2ZvdXJraXRlcy9wcm9kdWN0L2ZvdXJraXRlcz4NCg==",
+                                            "size": 622
+                                        },
+                                        "filename": "",
+                                        "headers": [
+                                            {
+                                                "name": "Content-Type",
+                                                "value": "text/plain; charset=\"UTF-8\""
+                                            }
+                                        ],
+                                        "mimeType": "text/plain",
+                                        "partId": "0"
+                                    },
+                                    {
+                                        "body": {
+                                            "data": "PGRpdiBkaXI9Imx0ciI-PGRpdj5uZXcgbG9hZCB3aGljaCBkb2VzbiYjMzk7dCBoYXZlIGFzc2V0IGluZm88L2Rpdj48ZGl2PjxkaXYgZGlyPSJsdHIiIGNsYXNzPSJnbWFpbF9zaWduYXR1cmUiIGRhdGEtc21hcnRtYWlsPSJnbWFpbF9zaWduYXR1cmUiPjxkaXYgZGlyPSJsdHIiPjx0YWJsZSB3aWR0aD0iMTAwJSIgYm9yZGVyPSIwIiBjZWxsc3BhY2luZz0iMCIgY2VsbHBhZGRpbmc9IjAiIGFsaWduPSJjZW50ZXIiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7Y29sb3I6cmdiKDAsMCwwKTtmb250LWZhbWlseTpUaW1lcztmb250LXNpemU6bWVkaXVtO3RhYmxlLWxheW91dDpmaXhlZCI-PHRib2R5Pjx0cj48dGQgYWxpZ249ImNlbnRlciIgdmFsaWduPSJ0b3AiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2UiPjx0YWJsZSBhbGlnbj0ibGVmdCIgd2lkdGg9IjYwMCIgYm9yZGVyPSIwIiBjZWxsc3BhY2luZz0iMCIgY2VsbHBhZGRpbmc9IjAiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7d2lkdGg6NjAwcHg7dGFibGUtbGF5b3V0OmZpeGVkIj48dGJvZHk-PHRyPjx0ZCBhbGlnbj0iY2VudGVyIiB2YWxpZ249InRvcCIgd2lkdGg9IjMwIiBzdHlsZT0iYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO3dpZHRoOjMwcHgiPsKgPC90ZD48dGQgYWxpZ249ImNlbnRlciIgdmFsaWduPSJ0b3AiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2UiPjx0YWJsZSB3aWR0aD0iNDYwIiBib3JkZXI9IjAiIGNlbGxzcGFjaW5nPSIwIiBjZWxscGFkZGluZz0iMCIgYWxpZ249ImxlZnQiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7d2lkdGg6NDYwcHgiPjx0Ym9keT48dHI-PHRkIGFsaWduPSJjZW50ZXIiIHZhbGlnbj0idG9wIiBzdHlsZT0iYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlIj48dGFibGUgd2lkdGg9IjQ2MCIgYm9yZGVyPSIwIiBjZWxsc3BhY2luZz0iMCIgY2VsbHBhZGRpbmc9IjAiIGFsaWduPSJsZWZ0IiBzdHlsZT0iYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO3dpZHRoOjQ2MHB4Ij48dGJvZHk-PHRyPjx0ZCBhbGlnbj0ibGVmdCIgdmFsaWduPSJ0b3AiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7Zm9udC1zaXplOjEzcHg7Zm9udC1mYW1pbHk6QXJpYWwsc2Fucy1zZXJpZjtsaW5lLWhlaWdodDoxOHB4O2NvbG9yOnJnYig4Myw4OCw5MCk7cGFkZGluZzoyMHB4IDBweCAxM3B4Ij48c3Ryb25nPkNocmlzIFlvdW5nPC9zdHJvbmc-PGJyPlNyLiBEaXJlY3RvciwgSW50ZWdyYXRpb25zPGJyPmNocmlzLnlvdW5nPGEgaHJlZj0ibWFpbHRvOmphbmUuc21pdGhAZm91cmtpdGVzLmNvbSIgc3R5bGU9ImJvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtjb2xvcjpyZ2IoODMsODgsOTApIiB0YXJnZXQ9Il9ibGFuayI-QGZvdXJraXRlcy5jb208L2E-wqB8IDc3My43OTYuNTI1NsKgfMKgPGEgaHJlZj0iaHR0cHM6Ly93d3cuZm91cmtpdGVzLmNvbS8iIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7Y29sb3I6cmdiKDgzLDg4LDkwKSIgdGFyZ2V0PSJfYmxhbmsiPnd3dy5mb3Vya2l0ZXMuY29tPC9hPjwvdGQ-PC90cj48dHI-PHRkIGFsaWduPSJsZWZ0IiB2YWxpZ249InRvcCIgc3R5bGU9ImJvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtwYWRkaW5nLWJvdHRvbToyMHB4Ij48YSBocmVmPSJodHRwczovL3d3dy5mb3Vya2l0ZXMuY29tLyIgc3R5bGU9ImJvcmRlci1jb2xsYXBzZTpjb2xsYXBzZSIgdGFyZ2V0PSJfYmxhbmsiPjxpbWcgc3JjPSJodHRwczovL3VzZXItaW1hZ2VzLmdpdGh1YnVzZXJjb250ZW50LmNvbS80ODAyMzU0MC8xOTQ2MjUwMzQtZmQ1MTQ3YzQtNWUxYS00MjRmLTlmMDItNjNhYWI1YjdiMzI5LmpwZWciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9ImF1dG8iIGJvcmRlcj0iMCIgYWx0PSJGb3VyS2l0ZXMgfCAjMSBTdXBwbHkgQ2hhaW4gVmlzaWJpbGl0eSBTb2x1dGlvbiIgc3R5bGU9ImJvcmRlcjowcHghaW1wb3J0YW50O291dGxpbmU6bm9uZSFpbXBvcnRhbnQ7ZGlzcGxheTpibG9jazttYXgtd2lkdGg6MTAwJTtmb250LXNpemU6MTZweDtmb250LWZhbWlseTpBcmlhbCxzYW5zLXNlcmlmO2xpbmUtaGVpZ2h0OjE4cHg7Y29sb3I6cmdiKDgzLDg4LDkwKSI-PC9hPjwvdGQ-PC90cj48L3Rib2R5PjwvdGFibGU-PC90ZD48L3RyPjx0cj48dGQgYWxpZ249ImNlbnRlciIgdmFsaWduPSJ0b3AiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2UiPjx0YWJsZSBhbGlnbj0ibGVmdCIgYm9yZGVyPSIwIiBjZWxsc3BhY2luZz0iMCIgY2VsbHBhZGRpbmc9IjAiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2UiPjx0Ym9keT48dHI-PHRkIGFsaWduPSJjZW50ZXIiIHZhbGlnbj0ibWlkZGxlIiBzdHlsZT0iYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO3BhZGRpbmctcmlnaHQ6MTJweCI-PGEgaHJlZj0iaHR0cHM6Ly93d3cubGlua2VkaW4uY29tL2NvbXBhbnkvZm91cmtpdGVzLWluYy8iIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2UiIHRhcmdldD0iX2JsYW5rIj48aW1nIHNyYz0iaHR0cHM6Ly93d3cuZm91cmtpdGVzLmNvbS93cC1jb250ZW50L3VwbG9hZHMvMjAyMC8xMi9zaWduYXR1cmVfbGlua2VkaW4ucG5nIiB3aWR0aD0iMTkiIGhlaWdodD0iMTkiIGJvcmRlcj0iMCIgYWx0PSJpbiIgc3R5bGU9ImJvcmRlcjowcHghaW1wb3J0YW50O291dGxpbmU6bm9uZSFpbXBvcnRhbnQ7ZGlzcGxheTpibG9jazttYXgtd2lkdGg6MTlweDtmb250LXNpemU6MTJweDtmb250LWZhbWlseTpBcmlhbCxzYW5zLXNlcmlmO2xpbmUtaGVpZ2h0OjE1cHg7Y29sb3I6cmdiKDAsMCwwKSI-PC9hPjwvdGQ-PHRkIGFsaWduPSJjZW50ZXIiIHZhbGlnbj0ibWlkZGxlIiBzdHlsZT0iYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlO3BhZGRpbmctcmlnaHQ6MTJweCI-PGEgaHJlZj0iaHR0cHM6Ly90d2l0dGVyLmNvbS9Gb3VyS2l0ZXMiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2UiIHRhcmdldD0iX2JsYW5rIj48aW1nIHNyYz0iaHR0cHM6Ly93d3cuZm91cmtpdGVzLmNvbS93cC1jb250ZW50L3VwbG9hZHMvMjAyMC8xMi9zaWduYXR1cmVfdHdpdHRlci5wbmciIHdpZHRoPSIxOSIgaGVpZ2h0PSIxOSIgYm9yZGVyPSIwIiBhbHQ9InR3IiBzdHlsZT0iYm9yZGVyOjBweCFpbXBvcnRhbnQ7b3V0bGluZTpub25lIWltcG9ydGFudDtkaXNwbGF5OmJsb2NrO21heC13aWR0aDoxOXB4O2ZvbnQtc2l6ZToxMnB4O2ZvbnQtZmFtaWx5OkFyaWFsLHNhbnMtc2VyaWY7bGluZS1oZWlnaHQ6MTVweDtjb2xvcjpyZ2IoMCwwLDApIj48L2E-PC90ZD48dGQgYWxpZ249ImNlbnRlciIgdmFsaWduPSJtaWRkbGUiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2U7cGFkZGluZy1yaWdodDoxMnB4Ij48YSBocmVmPSJodHRwczovL3d3dy5mYWNlYm9vay5jb20vRm91cktpdGVzIiBzdHlsZT0iYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlIiB0YXJnZXQ9Il9ibGFuayI-PGltZyBzcmM9Imh0dHBzOi8vd3d3LmZvdXJraXRlcy5jb20vd3AtY29udGVudC91cGxvYWRzLzIwMjAvMTIvc2lnbmF0dXJlX2ZiLnBuZyIgd2lkdGg9IjE5IiBoZWlnaHQ9IjE5IiBib3JkZXI9IjAiIGFsdD0iZmIiIHN0eWxlPSJib3JkZXI6MHB4IWltcG9ydGFudDtvdXRsaW5lOm5vbmUhaW1wb3J0YW50O2Rpc3BsYXk6YmxvY2s7bWF4LXdpZHRoOjE5cHg7Zm9udC1zaXplOjEycHg7Zm9udC1mYW1pbHk6QXJpYWwsc2Fucy1zZXJpZjtsaW5lLWhlaWdodDoxNXB4O2NvbG9yOnJnYigwLDAsMCkiPjwvYT48L3RkPjx0ZCBhbGlnbj0iY2VudGVyIiB2YWxpZ249Im1pZGRsZSIgc3R5bGU9ImJvcmRlci1jb2xsYXBzZTpjb2xsYXBzZSI-PGEgaHJlZj0iaHR0cHM6Ly93d3cuZzIuY29tL3Byb2R1Y3RzL2ZvdXJraXRlcy9yZXZpZXdzIiBzdHlsZT0iYm9yZGVyLWNvbGxhcHNlOmNvbGxhcHNlIiB0YXJnZXQ9Il9ibGFuayI-PGltZyBzcmM9Imh0dHBzOi8vd3d3LmZvdXJraXRlcy5jb20vd3AtY29udGVudC91cGxvYWRzLzIwMjAvMTIvc2lnbmF0dXJlX2cyLnBuZyIgd2lkdGg9IjE5IiBoZWlnaHQ9IjE5IiBib3JkZXI9IjAiIGFsdD0iZzIiIHN0eWxlPSJib3JkZXI6MHB4IWltcG9ydGFudDtvdXRsaW5lOm5vbmUhaW1wb3J0YW50O2Rpc3BsYXk6YmxvY2s7bWF4LXdpZHRoOjE5cHg7Zm9udC1zaXplOjEycHg7Zm9udC1mYW1pbHk6QXJpYWwsc2Fucy1zZXJpZjtsaW5lLWhlaWdodDoxNXB4O2NvbG9yOnJnYigwLDAsMCkiPjwvYT48L3RkPjx0ZCBhbGlnbj0iY2VudGVyIiB2YWxpZ249Im1pZGRsZSIgc3R5bGU9ImJvcmRlci1jb2xsYXBzZTpjb2xsYXBzZSI-PGEgaHJlZj0iaHR0cHM6Ly93d3cuZ2FydG5lci5jb20vcmV2aWV3cy9tYXJrZXQvcmVhbC10aW1lLXRyYW5zcG9ydGF0aW9uLXZpc2liaWxpdHktcGxhdGZvcm1zL3ZlbmRvci9mb3Vya2l0ZXMvcHJvZHVjdC9mb3Vya2l0ZXMiIHN0eWxlPSJib3JkZXItY29sbGFwc2U6Y29sbGFwc2UiIHRhcmdldD0iX2JsYW5rIj48aW1nIHNyYz0iaHR0cHM6Ly93d3cuZm91cmtpdGVzLmNvbS93cC1jb250ZW50L3VwbG9hZHMvMjAyMS8wMS9zaWduYXR1cmVfZ2FydG5lcl9yZXZpZXdzLnBuZyIgYm9yZGVyPSIwIiBhbHQ9IkdhcnRuZXIiIHN0eWxlPSJib3JkZXI6MHB4IWltcG9ydGFudDtvdXRsaW5lOm5vbmUhaW1wb3J0YW50O2Rpc3BsYXk6YmxvY2s7bWF4LWhlaWdodDoxOXB4O3BhZGRpbmctbGVmdDoxMnB4O2ZvbnQtc2l6ZToxMnB4O2ZvbnQtZmFtaWx5OkFyaWFsLHNhbnMtc2VyaWY7bGluZS1oZWlnaHQ6MTVweDtjb2xvcjpyZ2IoMCwwLDApIj48L2E-PC90ZD48L3RyPjx0cj48L3RyPjwvdGJvZHk-PC90YWJsZT48L3RkPjwvdHI-PHRyPjx0ZCBhbGlnbj0iY2VudGVyIiB2YWxpZ249InRvcCIgaGVpZ2h0PSI1MCIgc3R5bGU9ImJvcmRlci1jb2xsYXBzZTpjb2xsYXBzZTtoZWlnaHQ6NTBweCI-wqA8L3RkPjwvdHI-PC90Ym9keT48L3RhYmxlPjwvdGQ-PC90cj48L3Rib2R5PjwvdGFibGU-PC90ZD48L3RyPjwvdGJvZHk-PC90YWJsZT48L2Rpdj48L2Rpdj48L2Rpdj48aW5wdXQgbmFtZT0idmlydHJ1LW1ldGFkYXRhIiB0eXBlPSJoaWRkZW4iIHZhbHVlPSJ7JnF1b3Q7ZW1haWwtcG9saWN5JnF1b3Q7OnsmcXVvdDtkaXNhYmxlQ29weVBhc3RlJnF1b3Q7OmZhbHNlLCZxdW90O2Rpc2FibGVQcmludCZxdW90OzpmYWxzZSwmcXVvdDtkaXNhYmxlRm9yd2FyZGluZyZxdW90OzpmYWxzZSwmcXVvdDtlbmFibGVOb2F1dGgmcXVvdDs6ZmFsc2UsJnF1b3Q7ZXhwYW5kZWRXYXRlcm1hcmtpbmcmcXVvdDs6ZmFsc2UsJnF1b3Q7ZXhwaXJlcyZxdW90OzpmYWxzZSwmcXVvdDtzbXMmcXVvdDs6ZmFsc2UsJnF1b3Q7ZXhwaXJhdGlvbk51bSZxdW90OzoxLCZxdW90O2V4cGlyYXRpb25Vbml0JnF1b3Q7OiZxdW90O2RheXMmcXVvdDssJnF1b3Q7aXNNYW5hZ2VkJnF1b3Q7OmZhbHNlLCZxdW90O3BlcnNpc3RlbnRQcm90ZWN0aW9uJnF1b3Q7OmZhbHNlfSwmcXVvdDthdHRhY2htZW50cyZxdW90Ozp7fSwmcXVvdDtjb21wb3NlLWlkJnF1b3Q7OiZxdW90OzM1JnF1b3Q7LCZxdW90O2NvbXBvc2Utd2luZG93JnF1b3Q7OnsmcXVvdDtzZWN1cmUmcXVvdDs6ZmFsc2V9fSI-PC9kaXY-DQo=",
+                                            "size": 5591
+                                        },
+                                        "filename": "",
+                                        "headers": [
+                                            {
+                                                "name": "Content-Type",
+                                                "value": "text/html; charset=\"UTF-8\""
+                                            },
+                                            {
+                                                "name": "Content-Transfer-Encoding",
+                                                "value": "quoted-printable"
+                                            }
+                                        ],
+                                        "mimeType": "text/html",
+                                        "partId": "1"
+                                    }
+                                ]
+                            },
+                            "sizeEstimate": 12249,
+                            "snippet": "new load which doesn&#39;t have asset info Chris Young Sr. Director, Integrations chris.young@fourkites.com | 773.796.5256 | www.fourkites.com FourKites | #1 Supply Chain Visibility Solution in tw fb",
+                            "threadId": "1938d9d7ab13b330"
+                        },
+                        "context": {
+                            "id": "2piT9KZVKuj4zzOTsgxTMH5GtM8",
+                            "ts": "2024-12-03T17:42:23.961Z",
+                            "pipeline_id": null,
+                            "workflow_id": "p_YyCvykK",
+                            "deployment_id": "d_v7s8J2dP",
+                            "source_type": "TRACE",
+                            "verified": false,
+                            "hops": null,
+                            "test": true,
+                            "replay": false,
+                            "owner_id": "o_rAI1rz5",
+                            "platform_version": "3.52.0",
+                            "workflow_name": "p_13CvYnN-step-subflow-1733234568426",
+                            "resume": null,
+                            "emitter_id": null,
+                            "external_user_id": null,
+                            "external_user_environment": null,
+                            "trace_id": "2piT9KZVKuj4zzOTsgxTMH5GtM8",
+                            "JIT": true,
+                            "attachments": {}
+                        }
+                    },
+                    "email_generate_event_data": {
+                        "$return_value": {
+                            "type": "Email",
+                            "id": "1938d9d7ab13b330",
+                            "sender": "chris.young@fourkites.com",
+                            "tracking_id": "",
+                            "message": "Subject: FourKites Alert: Load #godwin-test-8 is not assigned tracking information\nMessage: new load which doesn't have asset info\r\n\r\n*Chris Young*\r\nSr. Director, Integrations\r\nchris.young@fourkites.com <jane.smith@fourkites.com> | 773.796.5256 |\r\nwww.fourkites.com\r\n[image: FourKites | #1 Supply Chain Visibility Solution]\r\n<https://www.fourkites.com/>\r\n[image: in] <https://www.linkedin.com/company/fourkites-inc/> [image: tw]\r\n<https://twitter.com/FourKites> [image: fb]\r\n<https://www.facebook.com/FourKites> [image: g2]\r\n<https://www.g2.com/products/fourkites/reviews> [image: Gartner]\r\n<https://www.gartner.com/reviews/market/real-time-transportation-visibility-platforms/vendor/fourkites/product/fourkites>\r\n",
+                            "latest_message": "new load which doesn't have asset info\r\n\r\n*Chris Young*\r\nSr. Director, Integrations\r\nchris.young@fourkites.com <jane.smith@fourkites.com> | 773.796.5256 |\r\nwww.fourkites.com\r\n[image: FourKites | #1 Supply Chain Visibility Solution]\r\n<https://www.fourkites.com/>\r\n[image: in] <https://www.linkedin.com/company/fourkites-inc/> [image: tw]\r\n<https://twitter.com/FourKites> [image: fb]\r\n<https://www.facebook.com/FourKites> [image: g2]\r\n<https://www.g2.com/products/fourkites/reviews> [image: Gartner]\r\n<https://www.gartner.com/reviews/market/real-time-transportation-visibility-platforms/vendor/fourkites/product/fourkites>\r\n",
+                            "latest_message_with_subject": "Subject: FourKites Alert: Load #godwin-test-8 is not assigned tracking information\nMessage: new load which doesn't have asset info\r\n\r\n*Chris Young*\r\nSr. Director, Integrations\r\nchris.young@fourkites.com <jane.smith@fourkites.com> | 773.796.5256 |\r\nwww.fourkites.com\r\n[image: FourKites | #1 Supply Chain Visibility Solution]\r\n<https://www.fourkites.com/>\r\n[image: in] <https://www.linkedin.com/company/fourkites-inc/> [image: tw]\r\n<https://twitter.com/FourKites> [image: fb]\r\n<https://www.facebook.com/FourKites> [image: g2]\r\n<https://www.g2.com/products/fourkites/reviews> [image: Gartner]\r\n<https://www.gartner.com/reviews/market/real-time-transportation-visibility-platforms/vendor/fourkites/product/fourkites>\r\n",
+                            "subject": "FourKites Alert: Load #godwin-test-8 is not assigned tracking information",
+                            "timestamp": "1733247715000",
+                            "agent_id": "TRACY",
+                            "attachment_path": "",
+                            "shipper_id": "test-qa-demo-shipper",
+                            "parent_request_id": "1938d9d7ab13b330",
+                            "workflow_id": "asset_not_assigned_carrier_follow_up"
+                        }
+                    },
+                    "classification_layer": {
+                        "$return_value": {
+                            "type": "PipedreamPlanRequest",
+                            "id": "2piT9KZVKuj4zzOTsgxTMH5GtM8"
+                        },
+                        "$context": {
+                            "branchId": "jVGHM89Z"
+                        }
+                    },
+                    "store_workflow_steps_s3": null
+                }
+            },
+            "context": {
+                "id": "2piT9Zz4uHmvfh7DGXthmyl43K5",
+                "ts": "2024-12-03T17:42:25.656Z",
+                "pipeline_id": null,
+                "workflow_id": "p_MOCjgJ1",
+                "deployment_id": "d_Eksebkg3",
+                "source_type": "COMPONENT",
+                "verified": false,
+                "hops": null,
+                "test": false,
+                "replay": false,
+                "owner_id": "o_rAI1rz5",
+                "platform_version": "3.52.0",
+                "workflow_name": "Asset Not Assigned [Carrier Follow Up]",
+                "resume": null,
+                "emitter_id": "hi_nlHLbR8",
+                "external_user_id": null,
+                "external_user_environment": null,
+                "trace_id": "2piT9dvqKuO19KMov8x28K0yTmt"
+            }
+        },
+        "index_id": "1733247745616-0",
+        "indexed_at_ms": 1733247745616,
+        "metadata": {
+            "emit_id": "2piT9eoC4zC2T92053PBBdbaCvw",
+            "emitter_id": "hi_nlHLbR8",
+            "name": "",
+            "summary": "POST /",
+            "id": null,
+            "ts": null,
+            "delivery_ts": null,
+            "external_user_id": null,
+            "external_user_environment": null
+        }
+    },
+    "create_ts": "2024-12-03T17:42:25.664Z",
+    "steps": {
+        "draft_single_load_info_request": {
+            "id": "c_RmfwqzZe",
+            "executed": false,
+            "exports": null,
+            "timings": null,
+            "logs": null,
+            "sends": null,
+            "checkpoint": null,
+            "end": null,
+            "error": null,
+            "response": null,
+            "props": null,
+            "from_trace_id": null,
+            "from_trace_executed": false,
+            "plan": null,
+            "export_ts": null,
+            "idx": 2
+        },
+        "send_email": {
+            "id": "c_N2f8zEJB",
+            "executed": false,
+            "exports": null,
+            "timings": null,
+            "logs": null,
+            "sends": null,
+            "checkpoint": null,
+            "end": null,
+            "error": null,
+            "response": null,
+            "props": null,
+            "from_trace_id": null,
+            "from_trace_executed": false,
+            "plan": null,
+            "export_ts": null,
+            "idx": 5
+        },
+        "merge_load_data": {
+            "id": "c_opfA03Gr",
+            "executed": false,
+            "exports": null,
+            "timings": null,
+            "logs": null,
+            "sends": null,
+            "checkpoint": null,
+            "end": null,
+            "error": null,
+            "response": null,
+            "props": null,
+            "from_trace_id": null,
+            "from_trace_executed": false,
+            "plan": null,
+            "export_ts": null,
+            "idx": 1
+        },
+        "load_extract_data_text": {
+            "id": "c_xofaDd8r",
+            "executed": false,
+            "exports": null,
+            "timings": null,
+            "logs": null,
+            "sends": null,
+            "checkpoint": null,
+            "end": null,
+            "error": null,
+            "response": null,
+            "props": null,
+            "from_trace_id": null,
+            "from_trace_executed": false,
+            "plan": null,
+            "export_ts": null,
+            "idx": 0
+        },
+        "insert_milestones": {
+            "id": "c_0RfVG9vd",
+            "executed": false,
+            "exports": null,
+            "timings": null,
+            "logs": null,
+            "sends": null,
+            "checkpoint": null,
+            "end": null,
+            "error": null,
+            "response": null,
+            "props": null,
+            "from_trace_id": null,
+            "from_trace_executed": false,
+            "plan": null,
+            "export_ts": null,
+            "idx": 4
+        },
+        "store_workflow_steps_s3": {
+            "id": "c_vZfWLDZZ",
+            "executed": false,
+            "exports": null,
+            "timings": null,
+            "logs": null,
+            "sends": null,
+            "checkpoint": null,
+            "end": null,
+            "error": null,
+            "response": null,
+            "props": null,
+            "from_trace_id": null,
+            "from_trace_executed": false,
+            "plan": null,
+            "export_ts": null,
+            "idx": 6
+        },
+        "retrieve_contacts": {
+            "id": "c_Epf1Mazo",
+            "executed": false,
+            "exports": null,
+            "timings": null,
+            "logs": null,
+            "sends": null,
+            "checkpoint": null,
+            "end": null,
+            "error": null,
+            "response": null,
+            "props": null,
+            "from_trace_id": null,
+            "from_trace_executed": false,
+            "plan": null,
+            "export_ts": null,
+            "idx": 3
+        }
+    },
+    "error": {
+        "code": "Out of Memory",
+        "message": "You've exceeded the default memory for this workflow. You can raise the memory in your workflow's Settings. See https://pipedream.com/docs/troubleshooting/#out-of-memory",
+        "ts": "2024-12-03T17:44:19.850Z",
+        "cellId": null,
+        "stack": null,
+        "$debug": null
+    },
+    "execution_start_ts": "2024-12-03T17:42:25.685Z",
+    "execution_end_ts": null,
+    "state": "ERROR",
+    "test": false,
+    "invocations": 1,
+    "lambda_time_ms": 103669,
+    "pause": null,
+    "replay": false,
+    "workflow_id": "p_MOCjgJ1",
+    "debug": false,
+    "test_params": null,
+    "uses_step_imports": false,
+    "step_imports": {},
+    "parent": null,
+    "response_id": null,
+    "track_completion": false,
+    "update_ts": "2024-12-03T17:44:19.983Z"
+}
