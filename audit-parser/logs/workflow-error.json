@@ -1,0 +1,336 @@
+{
+    "lock_version": 2,
+    "id": "2pVcssUAOYFKdPxXeEivInw0Xnn",
+    "request_id": "2pVcsoX75zVKkYUd38Azdh3TuVe",
+    "deployment_id": "d_qjsd2nNj",
+    "deployment_version": 45,
+    "trigger": {
+        "exports": {
+            "event": {
+                "id": "1937633052daae80",
+                "threadId": "1937632f04bba5a5",
+                "labelIds": [
+                    "IMPORTANT",
+                    "SENT",
+                    "INBOX"
+                ],
+                "snippet": "Test trigger Cheers Deependra",
+                "payload": {
+                    "partId": "",
+                    "mimeType": "multipart/alternative",
+                    "filename": "",
+                    "headers": [
+                        {
+                            "name": "MIME-Version",
+                            "value": "1.0"
+                        },
+                        {
+                            "name": "Date",
+                            "value": "Fri, 29 Nov 2024 10:04:34 +0530"
+                        },
+                        {
+                            "name": "Message-ID",
+                            "value": "<CAOWAhKyKD7sxhC2K7DMqw0TJx4ZxPyYxs=DyjXeHV-MU+6js5w@mail.gmail.com>"
+                        },
+                        {
+                            "name": "Subject",
+                            "value": "TEST"
+                        },
+                        {
+                            "name": "From",
+                            "value": "Deependra Mishra <deependra.mishra@fourkites.com>"
+                        },
+                        {
+                            "name": "To",
+                            "value": "Deependra Mishra <deependra.mishra@fourkites.com>"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "multipart/alternative; boundary=\"00000000000048b94a062805b785\""
+                        }
+                    ],
+                    "body": {
+                        "size": 0
+                    },
+                    "parts": [
+                        {
+                            "partId": "0",
+                            "mimeType": "text/plain",
+                            "filename": "",
+                            "headers": [
+                                {
+                                    "name": "Content-Type",
+                                    "value": "text/plain; charset=\"UTF-8\""
+                                }
+                            ],
+                            "body": {
+                                "size": 35,
+                                "data": "VGVzdCB0cmlnZ2VyDQoNCkNoZWVycw0KRGVlcGVuZHJhDQo="
+                            }
+                        },
+                        {
+                            "partId": "1",
+                            "mimeType": "text/html",
+                            "filename": "",
+                            "headers": [
+                                {
+                                    "name": "Content-Type",
+                                    "value": "text/html; charset=\"UTF-8\""
+                                }
+                            ],
+                            "body": {
+                                "size": 226,
+                                "data": "PGRpdiBkaXI9Imx0ciI-PGRpdj5UZXN0IHRyaWdnZXI8L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2PjxkaXYgZGlyPSJsdHIiIGNsYXNzPSJnbWFpbF9zaWduYXR1cmUiIGRhdGEtc21hcnRtYWlsPSJnbWFpbF9zaWduYXR1cmUiPjxkaXYgZGlyPSJsdHIiPkNoZWVyczxkaXY-PGZvbnQgY29sb3I9IiM5OTAwMDAiPkRlZXBlbmRyYTwvZm9udD48L2Rpdj48L2Rpdj48L2Rpdj48L2Rpdj48L2Rpdj4NCg=="
+                            }
+                        }
+                    ]
+                },
+                "sizeEstimate": 797,
+                "historyId": "13440771",
+                "internalDate": "1732854874000",
+                "thread": {
+                    "id": "1937632f04bba5a5",
+                    "historyId": "13440771",
+                    "messages": [
+                        {
+                            "id": "1937633052daae80",
+                            "threadId": "1937632f04bba5a5",
+                            "labelIds": [
+                                "IMPORTANT",
+                                "SENT",
+                                "INBOX"
+                            ],
+                            "snippet": "Test trigger Cheers Deependra",
+                            "payload": {
+                                "partId": "",
+                                "mimeType": "multipart/alternative",
+                                "filename": "",
+                                "headers": [
+                                    {
+                                        "name": "MIME-Version",
+                                        "value": "1.0"
+                                    },
+                                    {
+                                        "name": "Date",
+                                        "value": "Fri, 29 Nov 2024 10:04:34 +0530"
+                                    },
+                                    {
+                                        "name": "Message-ID",
+                                        "value": "<CAOWAhKyKD7sxhC2K7DMqw0TJx4ZxPyYxs=DyjXeHV-MU+6js5w@mail.gmail.com>"
+                                    },
+                                    {
+                                        "name": "Subject",
+                                        "value": "TEST"
+                                    },
+                                    {
+                                        "name": "From",
+                                        "value": "Deependra Mishra <deependra.mishra@fourkites.com>"
+                                    },
+                                    {
+                                        "name": "To",
+                                        "value": "Deependra Mishra <deependra.mishra@fourkites.com>"
+                                    },
+                                    {
+                                        "name": "Content-Type",
+                                        "value": "multipart/alternative; boundary=\"00000000000048b94a062805b785\""
+                                    }
+                                ],
+                                "body": {
+                                    "size": 0
+                                },
+                                "parts": [
+                                    {
+                                        "partId": "0",
+                                        "mimeType": "text/plain",
+                                        "filename": "",
+                                        "headers": [
+                                            {
+                                                "name": "Content-Type",
+                                                "value": "text/plain; charset=\"UTF-8\""
+                                            }
+                                        ],
+                                        "body": {
+                                            "size": 35,
+                                            "data": "VGVzdCB0cmlnZ2VyDQoNCkNoZWVycw0KRGVlcGVuZHJhDQo="
+                                        }
+                                    },
+                                    {
+                                        "partId": "1",
+                                        "mimeType": "text/html",
+                                        "filename": "",
+                                        "headers": [
+                                            {
+                                                "name": "Content-Type",
+                                                "value": "text/html; charset=\"UTF-8\""
+                                            }
+                                        ],
+                                        "body": {
+                                            "size": 226,
+                                            "data": "PGRpdiBkaXI9Imx0ciI-PGRpdj5UZXN0IHRyaWdnZXI8L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2PjxkaXYgZGlyPSJsdHIiIGNsYXNzPSJnbWFpbF9zaWduYXR1cmUiIGRhdGEtc21hcnRtYWlsPSJnbWFpbF9zaWduYXR1cmUiPjxkaXYgZGlyPSJsdHIiPkNoZWVyczxkaXY-PGZvbnQgY29sb3I9IiM5OTAwMDAiPkRlZXBlbmRyYTwvZm9udD48L2Rpdj48L2Rpdj48L2Rpdj48L2Rpdj48L2Rpdj4NCg=="
+                                        }
+                                    }
+                                ]
+                            },
+                            "sizeEstimate": 797,
+                            "historyId": "13440771",
+                            "internalDate": "1732854874000"
+                        }
+                    ]
+                },
+                "parsedHeaders": {
+                    "id": "1937633052daae80",
+                    "threadId": "1937632f04bba5a5",
+                    "subject": "TEST",
+                    "from": {
+                        "name": "Deependra Mishra",
+                        "email": "deependra.mishra@fourkites.com"
+                    },
+                    "to": {
+                        "name": "Deependra Mishra",
+                        "email": "deependra.mishra@fourkites.com"
+                    },
+                    "date": "Fri, 29 Nov 2024 10:04:34 +0530",
+                    "snippet": "Test trigger Cheers Deependra"
+                },
+                "decodedContent": "Test trigger\r\n\r\nCheers\r\nDeependra\r\n"
+            },
+            "context": {
+                "id": "2pVcsoX75zVKkYUd38Azdh3TuVe",
+                "ts": "2024-11-29T04:34:52.677Z",
+                "pipeline_id": null,
+                "workflow_id": "p_pWCxQWl",
+                "deployment_id": "d_qjsd2nNj",
+                "source_type": "COMPONENT",
+                "verified": false,
+                "hops": null,
+                "test": false,
+                "replay": false,
+                "owner_id": "o_rAI1rz5",
+                "platform_version": "3.52.0",
+                "workflow_name": "test-workflow",
+                "resume": null,
+                "emitter_id": "dc_ZduD7jX",
+                "external_user_id": null,
+                "external_user_environment": null,
+                "trace_id": "2pVcssUAOYFKdPxXeEivInw0Xnn"
+            }
+        },
+        "index_id": "1732854892674-0",
+        "indexed_at_ms": 1732854892674,
+        "metadata": {
+            "emit_id": "2pVcssRXEhbFwWcU5zfi9YZXKyw",
+            "emitter_id": "dc_ZduD7jX",
+            "name": "",
+            "summary": "Test trigger Cheers Deependra",
+            "id": "1937633052daae80",
+            "ts": 1732854874000,
+            "delivery_ts": null,
+            "external_user_id": null,
+            "external_user_environment": null
+        }
+    },
+    "create_ts": "2024-11-29T04:34:52.684Z",
+    "steps": {
+        "Hello_workflow": {
+            "id": "c_YYfL6aza",
+            "executed": true,
+            "exports": {},
+            "timings": {
+                "start_ts": "2024-11-29T04:34:57.803Z",
+                "end_ts": "2024-11-29T04:34:57.805Z"
+            },
+            "logs": [
+                {
+                    "message": "Hello, World!\n",
+                    "type": "stdout",
+                    "ts": "2024-11-29T04:34:57.805Z",
+                    "code": null,
+                    "fields": {}
+                }
+            ],
+            "sends": {},
+            "checkpoint": null,
+            "end": null,
+            "error": null,
+            "response": null,
+            "props": {},
+            "from_trace_id": "2pVcssUAOYFKdPxXeEivInw0Xnn",
+            "from_trace_executed": true,
+            "plan": null,
+            "export_ts": null,
+            "idx": 0
+        },
+        "code": {
+            "id": "c_7WfjJp3w",
+            "executed": true,
+            "exports": {},
+            "timings": {
+                "start_ts": "2024-11-29T04:34:57.805Z",
+                "end_ts": "2024-11-29T04:34:57.808Z"
+            },
+            "logs": [
+                {
+                    "message": "Hello, World!\n",
+                    "type": "stdout",
+                    "ts": "2024-11-29T04:34:57.807Z",
+                    "code": null,
+                    "fields": {}
+                }
+            ],
+            "sends": {},
+            "checkpoint": null,
+            "end": null,
+            "error": {
+                "code": "TypeError",
+                "message": "exceptions must derive from BaseException",
+                "ts": "2024-11-29T04:34:57.807Z",
+                "cellId": "c_7WfjJp3w",
+                "stack": "Traceback (most recent call last):\n\n  File \"/nano-py/pipedream/worker.py\", line 137, in execute\n    user_retval = handler(pd)\n                  ^^^^^^^^^^^\n\n  File \"/tmp/__pdg__/dist/code/d13e2ff79d05b97ccffda04ebd5131438d994e610f75a903ab7d3c550dee8662/code.py\", line 3, in handler\n    raise \"CUSTOM ERROR\"\n\nTypeError: exceptions must derive from BaseException\n",
+                "$debug": null
+            },
+            "response": null,
+            "props": {},
+            "from_trace_id": "2pVcssUAOYFKdPxXeEivInw0Xnn",
+            "from_trace_executed": true,
+            "plan": null,
+            "export_ts": null,
+            "idx": 1
+        },
+        "email_sentiment": {
+            "id": "c_VxfNv73Z",
+            "executed": false,
+            "exports": null,
+            "timings": null,
+            "logs": null,
+            "sends": null,
+            "checkpoint": null,
+            "end": null,
+            "error": null,
+            "response": null,
+            "props": null,
+            "from_trace_id": null,
+            "from_trace_executed": false,
+            "plan": null,
+            "export_ts": null,
+            "idx": 2
+        }
+    },
+    "error": null,
+    "execution_start_ts": "2024-11-29T04:34:52.704Z",
+    "execution_end_ts": "2024-11-29T04:34:57.812Z",
+    "state": "ERROR",
+    "test": false,
+    "invocations": 1,
+    "lambda_time_ms": 5076,
+    "pause": null,
+    "replay": false,
+    "workflow_id": "p_pWCxQWl",
+    "debug": false,
+    "test_params": null,
+    "uses_step_imports": false,
+    "step_imports": {},
+    "parent": null,
+    "response_id": null,
+    "track_completion": false,
+    "update_ts": "2024-11-29T04:34:57.815Z"
+}
