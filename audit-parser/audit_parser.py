@@ -34,8 +34,8 @@ def parse(json_file):
             "enquiry_sent_at": "",
             "reminder_sent_at": "",
             "escalation_sent_at": "",
-            "first_communication_time": "", # TODO: timestamp of communication in/out pick from relevant step
-            "last_communication_time": "", # TODO: timestamp of communication in/out pick from relevant step
+            "first_response_at": "", # TODO: timestamp of communication in/out pick from relevant step
+            "latest_response_at": "", # TODO: timestamp of communication in/out pick from relevant step
         }
 
         steps = data.get("steps", {})
@@ -72,9 +72,7 @@ def parse(json_file):
 
                     "comment": "", # summary of the step
                     "data": "", # e.g. email data
-
-                    "start_time": start_time,
-                    "end_time": end_time,
+                    "action_timestamp": end_time,
 
                     # "parent_request_id": event_data.get("parent_request_id")
                 }
