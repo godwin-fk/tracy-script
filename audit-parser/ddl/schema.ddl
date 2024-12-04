@@ -24,8 +24,8 @@ CREATE TABLE "workflow_run" (
     "enquiry_sent_at" TIMESTAMP WITH TIME ZONE,
     "reminder_sent_at"  TIMESTAMP WITH TIME ZONE,
     "escalation_sent_at"  TIMESTAMP WITH TIME ZONE,
+    "last_communication_time" TIMESTAMP WITH TIME ZONE,
 
-    "last_communication_time" BIGINT,
     "feedbacks" JSONB,
     "created_at" TIMESTAMP WITH TIME ZONE DEFAULT now(),
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now()

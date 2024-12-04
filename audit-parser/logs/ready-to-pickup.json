@@ -39514,7 +39514,8 @@
         "$summary": "Successfully created file Test_Hold_Over_Report_(1).xlsx in `/tmp` directory",
         "$return_value": {
           "filename": "Test_Hold_Over_Report_(1).xlsx",
-          "filePath": "/tmp/Test_Hold_Over_Report_(1).xlsx"
+          "filePath": "/tmp/Test_Hold_Over_Report_(1).xlsx",
+          "audit": [{}]
         }
       },
       "timings": {
