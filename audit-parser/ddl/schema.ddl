@@ -5,7 +5,6 @@ CREATE TABLE "workflow_run" (
     "parent_exec_id" VARCHAR,
 
     "workflow_id" VARCHAR,
-    "workflow_name" VARCHAR,
     "workflow_version" VARCHAR,
     "platform_version" VARCHAR,
 
@@ -46,9 +45,7 @@ CREATE TABLE "workflow_audit" (
   "entity_id" VARCHAR,
 
   "workflow_id" VARCHAR,
-  "workflow_name" VARCHAR,
   "step_id" VARCHAR,
-  "step_name" VARCHAR,
   "action" VARCHAR,
   "status" VARCHAR,
   "status_reason" VARCHAR,

@@ -61,26 +61,26 @@ class Parser:
             workflow_audit.append({
                 "id": str(uuid4()),
                 "thread_id": trigger_data["thread_id"], # same as trigger id at workflow run level
-                
+
                 "shipper_id": trigger_data["shipper_id"], 
                 "agent_id": trigger_data["agent_id"],
                 "entity_type": "", # TODO: need to evaluate .. agent... tracy LOAD, SAM: ORDER
                 "entity_id": "", # TODO: need to evaluate
-                
+
                 "workflow_id": trigger_data["workflow_id"],
                 "step_id": step_data.get("id", ""),
                 "step_name": step_name,
-                
+
                 "action": step_name,
                 "status": status,
                 "status_reason": status_reason,
-                
+
                 "comment": summary,
                 "data": "", # e.g. email data
                 "action_timestamp": timings.get("end_ts", "") if timings else "",
                 "idx": step_data.get("idx", 0)
             })
-            
+
         # Sort the workflow_audit list by idx
         workflow_audit = sorted(workflow_audit, key=lambda x: x["idx"])
 
@@ -107,27 +107,27 @@ class Parser:
             "exec_id": self.data.get("id"),
             "trace_id": self.data.get("request_id"),
             "parent_exec_id": "", # TODO: Get this for identifying child workflows
-            
+
             "workflow_id": self.data.get("workflow_id"),
             "workflow_name": trigger_data["workflow_name"],
             "workflow_version": self.data.get("deployment_id"),
             "platform_version": trigger_data["platform_version"],
-            
+
             "shipper_id": trigger_data.get("shipper_id"),
             "agent": trigger_data.get("agent_id"),
-            
+
             "trigger_type": trigger_data.get("type"), # trigger, EMAIL, IM
             "trigger_id": trigger_data.get("id"), # thread_id of the email or IM
             "trigger": "", # TODO: trigger context... eg. holdover_document, customer_query
-            
+
             "entity_type": "", # TODO: need to evaluate .. agent... tracy LOAD, SAM: ORDER
             "entity_id": "", # TODO: need to evaluate
             "status": "FAILURE" if trigger_data.get('error') or step_data["first_failure_reason"] else "SUCCESS", # Check if errors in any of the steps... FAILURE otherwise SUCCESS .. (TODO: AWAITING, SKIPPED)
             "status_reason": trigger_data.get('error',{}).get('message',"") if trigger_data.get('error') or step_data["first_failure_reason"] else '', # error from the first step with error or workflow level error
             "comments": step_data["final_comment"], # summary of the most recent step
             "data": "", # TODO: {entity_related: {'scac': '', 'carrier_name': ''}} # would depend on entity_type
-            
-            
+
+
             # TODO: Derive from relevant action timestamp
             "enquiry_sent_at": "",
             "reminder_sent_at": "",

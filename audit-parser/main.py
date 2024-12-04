@@ -1,27 +1,25 @@
 import os
 import json
-from audit_parser import Parser
+from parser import Parser
 
-def process_json_files(directory_path):
-    
-    output_directory = os.path.join(directory_path, "output")
-    os.makedirs(output_directory, exist_ok=True)
-    
-    for file_name in os.listdir(directory_path):
+def process_json_files(log_dir):
+    output_dir = os.path.join("output")
+    os.makedirs(output_dir, exist_ok=True)
+
+    for file_name in os.listdir(log_dir):
         if file_name.endswith('.json'):
-            file_path = os.path.join(directory_path, file_name)
-            print(f"Processing: {file_path}")
+            file_path = os.path.join(log_dir, file_name)
+            print(f"\nProcessing: {file_path}")
 
             parser = Parser(file_path)
             parsed_output = parser.parse_workflow()
 
-            output_file = os.path.join(output_directory, f"{os.path.splitext(file_name)[0]}_output.json")
+            output_file = os.path.join(output_dir, f"{os.path.splitext(file_name)[0]}_output.json")
             with open(output_file, 'w') as output:
                 json.dump(parsed_output, output, indent=4)
 
-            print(f"Processed: {file_path}, Output saved to: {output_file}")
+            print(f"Output Saved: {output_file}\n")
 
 if __name__ == "__main__":
-
     directory = "logs"
     process_json_files(directory)
