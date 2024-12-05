@@ -618,7 +618,32 @@
                     "attachment_path": "",
                     "shipper_id": "test-qa-demo-shipper",
                     "parent_request_id": "1938d9d7ab13b330",
-                    "workflow_id": "parent_classifier_workflow"
+                    "workflow_id": "parent_classifier_workflow",
+                    "audit": [
+                        {
+                            "thread_id": "1938d9d7ab13b330",
+                            "shipper_id": "test-qa-demo-shipper",
+                            "agent_id": "TRACY",
+                            "entity_type": "EMAIL",
+                            "entity_id": "1938d9d7ab13b330",
+                            "workflow_id": "p_13CvYnN",
+                            "step_id": "c_BKfRqdjR",
+                            "action": "TRIGGER_PARSED",
+                            "status": "SUCCESS",
+                            "status_reason": null,
+                            "comment": null,
+                            "data": {
+                              "trigger": {
+                                "sender": "chris.young@fourkites.com",
+                                "subject": "FourKites Alert: Load #godwin-test-8 is not assigned tracking information",
+                                "message": "new load which doesn't have asset info\r\n\r\n*Chris Young*\r\nSr. Director, Integrations\r\nchris.young@fourkites.com <jane.smith@fourkites.com> | 773.796.5256 |\r\nwww.fourkites.com\r\n[image: FourKites | #1 Supply Chain Visibility Solution]\r\n<https://www.fourkites.com/>\r\n[image: in] <https://www.linkedin.com/company/fourkites-inc/> [image: tw]\r\n<https://twitter.com/FourKites> [image: fb]\r\n<https://www.facebook.com/FourKites> [image: g2]\r\n<https://www.g2.com/products/fourkites/reviews> [image: Gartner]\r\n<https://www.gartner.com/reviews/market/real-time-transportation-visibility-platforms/vendor/fourkites/product/fourkites>\r\n",
+                                "timestamp": "2024-12-03T17:41:55.000Z",
+                                "attachments": []
+                              }
+                            },
+                            "action_timestamp": "2024-12-03T17:43:40.000Z"
+                          }
+                    ]
                 }
             },
             "timings": {
