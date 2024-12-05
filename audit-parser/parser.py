@@ -151,7 +151,7 @@ class Parser:
 
 
             # TODO: Derive from relevant action timestamp
-            "enquiry_sent_at": "",
+            "followup_sent_at": "",
             "reminder_sent_at": "",
             "escalation_sent_at": "",
             "first_response_at": "", # TODO: timestamp of communication in/out pick from relevant step

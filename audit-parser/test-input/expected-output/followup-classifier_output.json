@@ -1,9 +1,9 @@
 {
     "workflow_run": {
-        "id": "d6b34467-ba9a-411e-a305-cbb12767b1bd",
-        "exec_id": "2piTJnPzAhptwXlszRhZwXb5nUF",
+        "id": "dec700ca-f978-431b-94f1-17b8e688bb89",
+        "exec_id": "2piTKNNm6J1XZJbHqlPqBFg9pLB",
         "trace_id": "2piTJnPzAhptwXlszRhZwXb5nUF",
-        "parent_exec_id": "",
+        "parent_exec_id": null,
         "workflow_id": "p_13CvYnN",
         "workflow_name": "Parent Classifier Workflow - CY",
         "workflow_version": "d_MOsAQBnp",
@@ -19,16 +19,18 @@
         "status_reason": "",
         "comments": "",
         "data": "",
-        "enquiry_sent_at": "",
+        "followup_sent_at": "",
         "reminder_sent_at": "",
         "escalation_sent_at": "",
         "first_response_at": "",
-        "latest_response_at": ""
+        "latest_response_at": "",
+        "start_time": "2024-12-03T17:43:46.838Z",
+        "end_time": "2024-12-03T17:43:53.430Z"
     },
     "workflow_audit": [
         {
-            "id": "4ea128ce-9dbb-4ad2-8c95-73469ec79761",
-            "thread_id": "",
+            "id": "b2ffbb3f-5e44-4967-b76e-178512fac08b",
+            "thread_id": "1938d9d7ab13b330",
             "shipper_id": "",
             "agent_id": "",
             "entity_type": "",
@@ -45,8 +47,8 @@
             "idx": 0
         },
         {
-            "id": "5a5af153-32e0-495f-9150-78e6b80e8be1",
-            "thread_id": "",
+            "id": "b79f9a8b-9f8f-4a38-881c-1be9b1707bcb",
+            "thread_id": "1938d9d7ab13b330",
             "shipper_id": "",
             "agent_id": "",
             "entity_type": "",
@@ -61,24 +63,6 @@
             "data": {},
             "action_timestamp": "2024-12-03T17:43:50.067Z",
             "idx": 1
-        },
-        {
-            "id": "31fbd85a-181c-4f0c-9058-e3d818338015",
-            "thread_id": "",
-            "shipper_id": "",
-            "agent_id": "",
-            "entity_type": "",
-            "entity_id": "",
-            "workflow_id": "",
-            "step_id": "c_LofwqKmp",
-            "step_name": "store_workflow_steps_s3",
-            "action": "store_workflow_steps_s3",
-            "status": "SUCCESS",
-            "status_reason": "",
-            "comment": "",
-            "data": {},
-            "action_timestamp": "2024-12-03T17:43:53.375Z",
-            "idx": 2
         }
     ]
 }

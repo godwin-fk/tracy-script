@@ -22,13 +22,15 @@ CREATE TABLE "workflow_run" (
     "comments" VARCHAR,
     "data" JSONB,
 
-    "enquiry_sent_at" TIMESTAMP WITH TIME ZONE,
+    "followup_sent_at" TIMESTAMP WITH TIME ZONE,
     "reminder_sent_at"  TIMESTAMP WITH TIME ZONE,
     "escalation_sent_at"  TIMESTAMP WITH TIME ZONE,
     "first_response_at" TIMESTAMP WITH TIME ZONE,
     "latest_response_at" TIMESTAMP WITH TIME ZONE,
 
     "feedbacks" JSONB,
+    "start_time" TIMESTAMP WITH TIME ZONE,
+    "end_time" TIMESTAMP WITH TIME ZONE,
     "created_at" TIMESTAMP WITH TIME ZONE DEFAULT now(),
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT now()
 );

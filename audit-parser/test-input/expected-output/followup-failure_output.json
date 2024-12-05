@@ -19,7 +19,7 @@
         "status_reason": "You've exceeded the default memory for this workflow. You can raise the memory in your workflow's Settings. See https://pipedream.com/docs/troubleshooting/#out-of-memory",
         "comments": "",
         "data": "",
-        "enquiry_sent_at": "",
+        "followup_sent_at": "",
         "reminder_sent_at": "",
         "escalation_sent_at": "",
         "first_response_at": "",

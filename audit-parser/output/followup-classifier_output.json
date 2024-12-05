@@ -19,7 +19,7 @@
         "status_reason": "",
         "comments": "",
         "data": "",
-        "enquiry_sent_at": "",
+        "followup_sent_at": "",
         "reminder_sent_at": "",
         "escalation_sent_at": "",
         "first_response_at": "",

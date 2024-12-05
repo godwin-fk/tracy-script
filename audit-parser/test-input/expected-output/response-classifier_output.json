@@ -19,7 +19,7 @@
         "status_reason": "",
         "comments": "",
         "data": "",
-        "enquiry_sent_at": "",
+        "followup_sent_at": "",
         "reminder_sent_at": "",
         "escalation_sent_at": "",
         "first_response_at": "",
@@ -61,24 +61,6 @@
             "data": {},
             "action_timestamp": "2024-12-03T17:48:42.993Z",
             "idx": 1
-        },
-        {
-            "id": "4e2ccec4-6454-473e-bba7-d0908165440b",
-            "thread_id": "",
-            "shipper_id": "",
-            "agent_id": "",
-            "entity_type": "",
-            "entity_id": "",
-            "workflow_id": "",
-            "step_id": "c_LofwqKmp",
-            "step_name": "store_workflow_steps_s3",
-            "action": "store_workflow_steps_s3",
-            "status": "SUCCESS",
-            "status_reason": "",
-            "comment": "",
-            "data": {},
-            "action_timestamp": "2024-12-03T17:48:47.133Z",
-            "idx": 2
         }
     ]
 }
