@@ -10,3 +10,4 @@ __pycache__/
 /venv
 /.vscode
 audit-parser/test/output
+audit-parser/output
