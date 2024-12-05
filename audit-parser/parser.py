@@ -15,6 +15,12 @@ class Parser:
         error = self.data.get("error", {})
         trigger_exports = self.data.get("trigger", {}).get("exports", {})
         trigger_context = trigger_exports.get("context", {})
+
+        # Always extract workflow related (id, trace_id, name, version) from trigger context
+        # For trigger type, threadId, shipperId, agentId, extract from email_generate_event_data if present OTHERWISE from trigger context
+
+        # For classifers we will have a step with naming pattern as {triggerType}_generate_event_data and props of this step will have shipper, agent details
+        # EntityType and Id as null
         email_event_data = (
             trigger_exports
             .get("event", {})
@@ -24,13 +30,15 @@ class Parser:
         )
 
         return {
+            "workflow_id": email_event_data.get("workflow_id", ""),
             "workflow_name": trigger_context.get("workflow_name", ""),
             "platform_version": trigger_context.get("platform_version", ""),
-            "trigger_type": email_event_data.get("type", ""),
-            "thread_id": email_event_data.get("id", ""),
+
             "shipper_id": email_event_data.get("shipper_id", ""),
             "agent_id": email_event_data.get("agent_id", ""),
-            "workflow_id": email_event_data.get("workflow_id", ""),
+
+            "trigger_type": email_event_data.get("type", ""),
+            "thread_id": email_event_data.get("id", ""),
             "error": error
         }
 
@@ -41,18 +49,19 @@ class Parser:
         first_failure = "SUCCESS"
         first_failure_reason = ""
         final_comment = ""
+
         for step_name, step_data in steps.items():
             if not isinstance(step_data, dict):
                 continue
 
             step_error = step_data.get("error", {})
             status_reason = ""
-            status = "FAILURE" if step_error else "SUCCESS"
-            if status == "FAILURE":
+            status = "FAILED" if step_error else "SUCCESS"
+            if status == "FAILED":
                 status_reason = step_error.get("message", "")
-                # Set workflow status to FAILURE if any step fails(first failure)
-                if first_failure == "SUCCESS":  
-                    first_failure = status 
+                # Set workflow status to FAILED if any step fails(first failure)
+                if first_failure == "SUCCESS":
+                    first_failure = status
                     first_failure_reason = status_reason
 
             timings = step_data.get("timings", {})
@@ -62,7 +71,7 @@ class Parser:
                 "id": str(uuid4()),
                 "thread_id": trigger_data["thread_id"], # same as trigger id at workflow run level
 
-                "shipper_id": trigger_data["shipper_id"], 
+                "shipper_id": trigger_data["shipper_id"],
                 "agent_id": trigger_data["agent_id"],
                 "entity_type": "", # TODO: need to evaluate .. agent... tracy LOAD, SAM: ORDER
                 "entity_id": "", # TODO: need to evaluate
@@ -76,7 +85,7 @@ class Parser:
                 "status_reason": status_reason,
 
                 "comment": summary,
-                "data": "", # e.g. email data
+                "data": {}, # e.g. email data
                 "action_timestamp": timings.get("end_ts", "") if timings else "",
                 "idx": step_data.get("idx", 0)
             })
@@ -87,8 +96,7 @@ class Parser:
         return {
             # "first_failure": first_failure,
             "first_failure_reason": first_failure_reason,
-            "final_comment": final_comment,
-            "workflow_audit": workflow_audit
+git             "workflow_audit": workflow_audit
         }
 
     def parse_workflow(self):
@@ -122,7 +130,7 @@ class Parser:
 
             "entity_type": "", # TODO: need to evaluate .. agent... tracy LOAD, SAM: ORDER
             "entity_id": "", # TODO: need to evaluate
-            "status": "FAILURE" if trigger_data.get('error') or step_data["first_failure_reason"] else "SUCCESS", # Check if errors in any of the steps... FAILURE otherwise SUCCESS .. (TODO: AWAITING, SKIPPED)
+            "status": "FAILED" if trigger_data.get('error') or step_data["first_failure_reason"] else "SUCCESS", # Check if errors in any of the steps... FAILED otherwise SUCCESS .. (TODO: AWAITING, SKIPPED)
             "status_reason": trigger_data.get('error',{}).get('message',"") if trigger_data.get('error') or step_data["first_failure_reason"] else '', # error from the first step with error or workflow level error
             "comments": step_data["final_comment"], # summary of the most recent step
             "data": "", # TODO: {entity_related: {'scac': '', 'carrier_name': ''}} # would depend on entity_type

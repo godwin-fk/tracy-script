@@ -9,4 +9,4 @@ __pycache__/
 /utils/attachments/*
 /venv
 /.vscode
-audit-parser/output
+audit-parser/test/output

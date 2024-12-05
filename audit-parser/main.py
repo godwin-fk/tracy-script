@@ -3,7 +3,7 @@ import json
 from parser import Parser
 
 def process_json_files(log_dir):
-    output_dir = os.path.join("output")
+    output_dir = os.path.join("audit-parser/output")
     os.makedirs(output_dir, exist_ok=True)
 
     for file_name in os.listdir(log_dir):
@@ -21,5 +21,5 @@ def process_json_files(log_dir):
             print(f"Output Saved: {output_file}\n")
 
 if __name__ == "__main__":
-    directory = "logs"
+    directory = "audit-parser/test-input/run-logs"
     process_json_files(directory)
