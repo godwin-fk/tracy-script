@@ -1,3 +1,7 @@
 psycopg2
 pandas
 python-dotenv
+openpyxl
+google-auth 
+google-auth-oauthlib 
+google-api-python-client
