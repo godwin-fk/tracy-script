@@ -1,12 +1,14 @@
-import imaplib
-import email
 import os
-from datetime import datetime
-from datetime import timedelta
+import logging
+import base64
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from datetime import datetime, timedelta
 from openpyxl import load_workbook, Workbook
 import pandas as pd
 
-
+logger = logging.getLogger(__name__)
 
 def get_unique_filepath(filepath):
     base, extension = os.path.splitext(filepath)
@@ -16,80 +18,72 @@ def get_unique_filepath(filepath):
         counter += 1
     return filepath
 
-# Function to login and fetch emails
-def fetch_holdover_reports(email_address, password, start_date, end_date, save_path):
-    # Ensure save_path exists
-    os.makedirs(save_path, exist_ok=True)
-
-    # Connect to Gmail server
-    mail = imaplib.IMAP4_SSL("imap.gmail.com")
+def get_gmail_service(shipper_id: str, agent_id: str):
+    """Authenticate using environment variables and return the Gmail API service."""
+    shipper_id = shipper_id.replace("-", "_")
+    token_info = {
+            "client_id": os.getenv(f"{shipper_id}_{agent_id}_GOOGLE_CLIENT_ID"),
+            "client_secret": os.getenv(f"{shipper_id}_{agent_id}_GOOGLE_CLIENT_SECRET"),
+            "refresh_token": os.getenv(f"{shipper_id}_{agent_id}_GOOGLE_REFRESH_TOKEN"),
+            "token_uri": os.getenv(f"GOOGLE_TOKEN_URI"),
+            "scopes": ["https://mail.google.com/"]
+    }
+    for key, value in token_info.items():
+        if not value:
+            raise ValueError(f"Missing required environment variable: {key}")
 
     try:
-        # Login to the account
-        mail.login(email_address, password)
-
-        # Select the inbox
-        mail.select("inbox")
-
-        # Format date ranges for IMAP search
-        start_date_formatted = datetime.strptime(start_date, "%Y-%m-%d").strftime("%d-%b-%Y")
-        end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
-
-        adjusted_end_date = (end_date_obj + timedelta(days=1)).strftime("%d-%b-%Y")
-
-        # Search for emails with the specified subject within the date range
-        status, email_ids = mail.search(
+        creds = Credentials(
             None,
-            f'(SUBJECT "holdover" SINCE {start_date_formatted} BEFORE {adjusted_end_date})'
+            refresh_token=token_info["refresh_token"],
+            client_id=token_info["client_id"],
+            client_secret=token_info["client_secret"],
+            token_uri=token_info["token_uri"],
         )
 
-        # Ensure search was successful
-        if status != "OK":
-            print("No emails found.")
+        return build("gmail", "v1", credentials=creds)
+    except Exception as e:
+        logger.error(f"Error authenticating with Gmail API: {e}")
+        raise
+
+def search_emails_with_attachments(gmail_service, query, save_path):
+    """Search emails matching the query and download attachments to the save path."""
+    os.makedirs(save_path, exist_ok=True)
+
+    try:
+        # Search emails matching the query
+        results = gmail_service.users().messages().list(userId="me", q=query).execute()
+        messages = results.get("messages", [])
+
+        if not messages:
+            print("No emails found matching the query.")
             return
 
-        # Process emails
-        for email_id in email_ids[0].split():
-            status, data = mail.fetch(email_id, "(RFC822)")
-            if status != "OK":
-                print(f"Failed to fetch email ID: {email_id}")
-                continue
-
-            # Parse the email content
-            raw_email = data[0][1]
-            msg = email.message_from_bytes(raw_email)
-            subject = msg["subject"]
-
-            # Ignore emails with 'holdover report template'
-            if "holdover report template" in subject.lower():
-                continue
+        for message in messages:
+            msg = gmail_service.users().messages().get(userId="me", id=message["id"]).execute()
+            subject = next(
+                (header["value"] for header in msg["payload"]["headers"] if header["name"] == "Subject"), "No Subject"
+            )
+            print(f"Found Email - Subject: {subject}")
 
             # Download attachments
-            if msg.is_multipart():
-                for part in msg.walk():
-                    if part.get_content_disposition() == "attachment":
-                        filename = part.get_filename()
-                        if filename:
-                            # filepath = os.path.join(save_path, filename)
-                            filepath = get_unique_filepath(os.path.join(save_path, filename))
-                            with open(filepath, "wb") as f:
-                                f.write(part.get_payload(decode=True))
-                            print(f"Downloaded: {filename}")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    finally:
-        # Logout from the server
-        mail.logout()
+            if "parts" in msg["payload"]:
+                for part in msg["payload"]["parts"]:
+                    if part.get("filename") and part["body"].get("attachmentId"):
+                        attachment_id = part["body"]["attachmentId"]
+                        attachment = gmail_service.users().messages().attachments().get(
+                            userId="me", messageId=message["id"], id=attachment_id
+                        ).execute()
+                        data = attachment["data"]
+                        filepath = get_unique_filepath(os.path.join(save_path, part["filename"]))
+                        with open(filepath, "wb") as f:
+                            f.write(base64.urlsafe_b64decode(data))
+                        print(f"Downloaded Attachment: {part['filename']}")
+    except HttpError as error:
+        print(f"An error occurred: {error}")
 
 
 def merge_xlsx_files(directory, output_file="../temp/merged_holdover_reports.xlsx"):
-    """
-    Merges all .xlsx files in the given directory into a single Excel file.
-
-    :param directory: Path to the directory containing .xlsx files.
-    :param output_file: Name of the output merged Excel file.
-    """
     # Create a new workbook for the merged file
     merged_workbook = Workbook()
     merged_sheet = merged_workbook.active
@@ -185,48 +179,46 @@ def update_headers(output_file: str):
     for col_index, header in enumerate(headers, start=1):
         sheet.cell(row=1, column=col_index).value = header
     
-    # Save the updated workbook
     wb.save(output_file)
     print(f"Headers updated and first row removed in: {output_file}")
 
 
 def convert_excel_to_csv(output_file: str, shipper_id_holdover: str, start_date: str, end_date: str):
-    """
-    Converts the Excel file to a CSV file and saves it with the specified filename format.
-    
-    Parameters:
-    - output_file: str - Path to the Excel file.
-    - shipper_id_holdover: str - The shipper ID for naming the CSV file.
-    - start_date: str - The start date for naming the CSV file.
-    - end_date: str - The end date for naming the CSV file.
-    """
-    # Generate the output CSV file name
     csv_filepath = f"../temp/{shipper_id_holdover}-{start_date}_{end_date}.csv"
     
-    # Read the Excel file into a DataFrame
     df = pd.read_excel(output_file)
     
-    # Save the DataFrame as a CSV file
     df.to_csv(csv_filepath, index=False)
     print(f"Converted Excel to CSV and saved as: {csv_filepath}")
 
 
 
-# Input credentials and other parameters
 if __name__ == "__main__":
-
-    email_address = 'smithfield_visibility_services@fourkites.com'
-    password = 'F0urKit3sR0cks'
-    start_date = "2024-11-07" 
-    end_date =  "2024-11-07" 
+    
+    # Replace these with appropriate values
+    shipper_id = "smithfield_foods"
+    agent_id = "TRACY"
     save_path = "attachments"
     output_file = "../temp/output_data.xlsx"
-    shipper_id = 'smithfield-foods'
-    shipper_id_holdover = f'{shipper_id}-holdover'
 
-    fetch_holdover_reports(email_address, password, start_date, end_date, save_path)
+    start_date = "2024-12-01"
+    end_date = "2024-12-05"
+
+    start_timestamp = int(datetime.strptime(start_date, "%Y-%m-%d").timestamp())
+    
+    # Add one day to end_date to make it inclusive
+    end_date_inclusive = datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1)
+    end_timestamp = int(end_date_inclusive.timestamp())
+
+    search_query = f'holdover OR "hold over" has:attachment in:anywhere after:{start_timestamp} before:{end_timestamp}'
+
+    gmail_service = get_gmail_service(shipper_id, agent_id)
+    search_emails_with_attachments(gmail_service, search_query, save_path)
+
     input_file = merge_xlsx_files(save_path)
     clean_excel(input_file, output_file)
     update_headers(output_file)
+    
+    shipper_id_holdover = f'{shipper_id}-holdover'
     convert_excel_to_csv(output_file, shipper_id_holdover, start_date, end_date)
 
