@@ -97,7 +97,7 @@ def get_milestones_query(shipper_id, workflow_identifier, start_date, end_date):
                 t2.shipper_id,
                 t2.status AS "status",
                 t2.comments AS "comments",
-                TO_CHAR(t2.created_at, 'YYYY-MM-DD HH24:MI:SS') as "enquiry_sent_at"
+                TO_CHAR(t2.created_at, 'YYYY-MM-DD HH24:MI:SS') as "followup_sent_at"
             FROM
                 milestones t2
             WHERE
