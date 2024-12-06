@@ -8,7 +8,7 @@
         "workflow_version": "d_Eksebkg3",
         "platform_version": "3.52.0",
         "shipper_id": "test-qa-demo-shipper",
-        "agent": "TRACY",
+        "agent_id": "TRACY",
         "trigger_type": "Email",
         "trigger_id": "1938d9d7ab13b330",
         "trigger": null,

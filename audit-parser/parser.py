@@ -135,7 +135,7 @@ class Parser:
             "platform_version": trigger_data["platform_version"],
 
             "shipper_id": trigger_data.get("shipper_id"),
-            "agent": trigger_data.get("agent_id"),
+            "agent_id": trigger_data.get("agent_id"),
 
             "trigger_type": trigger_data["trigger_type"], # trigger, EMAIL, IM
             "trigger_id": trigger_data["thread_id"], # (not request_id from data itself) thread_id of the email or IM

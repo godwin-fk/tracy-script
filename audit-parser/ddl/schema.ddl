@@ -8,7 +8,7 @@ CREATE TABLE "workflow_run" (
     "platform_version" VARCHAR,
 
     "shipper_id" VARCHAR,
-    "agent" VARCHAR,
+    "agent_id" VARCHAR,
 
     "trigger_type" VARCHAR,
     "trigger_id" VARCHAR,
@@ -41,7 +41,7 @@ CREATE TABLE "workflow_audit" (
   "request_id" VARCHAR,
 
   "shipper_id" VARCHAR,
-  "agent" VARCHAR,
+  "agent_id" VARCHAR,
   "entity_type" VARCHAR,
   "entity_id" VARCHAR,
 
