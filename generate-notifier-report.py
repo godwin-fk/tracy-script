@@ -53,16 +53,16 @@ class Main:
         df = pd.read_csv(filename)
 
         # Convert Triggered At and Response At columns to datetime format
-        df['Enquiry Sent At'] = pd.to_datetime(df['Enquiry Sent At'], errors='coerce')
+        df['Followup Sent At'] = pd.to_datetime(df['Followup Sent At'], errors='coerce')
         df['Response At'] = pd.to_datetime(df['Response At'], errors='coerce')
 
         # Calculate Response Delay (mins) in minutes
         df['Response Delay (mins)'] = df.apply(
-            lambda row: (row['Response At'] - row['Enquiry Sent At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
+            lambda row: (row['Response At'] - row['Followup Sent At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
             axis=1
         )
         self.df = df
-        self.df = self.df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
+        self.df = self.df[['Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Load Number','Trigger Message','Response Message','Triggered At','Followup Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
         # Save the updated CSV file
         self.df.to_csv(filename, index=False)
 
@@ -87,7 +87,7 @@ class Main:
                 'response_timestamp': 'Response At',
                 'reminder': 'Reminder',
                 'escalated': 'Escalated',
-                'enquiry_sent_at': 'Enquiry Sent At'
+                'followup_sent_at': 'Followup Sent At'
             })
             # TODO:add - in single string
             self.df['Workflow Execution Id'] = self.df.apply(
@@ -115,14 +115,14 @@ class Main:
         # Drop unnecessary columns
         df_db2 = df_db2.drop(columns=['status', 'comments'])
         self.df = pd.merge(df1, df_db2, on=['load_id', 'shipper_id'], how='left')
-        self.df['enquiry_sent_at'] = pd.to_datetime(self.df['enquiry_sent_at'])
+        self.df['followup_sent_at'] = pd.to_datetime(self.df['followup_sent_at'])
         self.df['trigger_timestamp'] = pd.to_datetime(self.df['trigger_timestamp'])
 
         # remove rows & update status as TRIGGER_SKIPPED as applicable
         requests_processed = set()
         rows_to_remove = set()
         for index, row in self.df.iterrows():
-            if not pd.isnull(row['enquiry_sent_at']) and (row['enquiry_sent_at'] < row['trigger_timestamp'] or (row['enquiry_sent_at'] - row['trigger_timestamp']).total_seconds() > 120) :
+            if not pd.isnull(row['followup_sent_at']) and (row['followup_sent_at'] < row['trigger_timestamp'] or (row['followup_sent_at'] - row['trigger_timestamp']).total_seconds() > 120) :
                 rows_to_remove.add(index)
                 self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
                 self.df.at[index, 'response_message'] = None
@@ -130,7 +130,7 @@ class Main:
                 self.df.at[index, 'actions'] = 'DETAILS_EXTRACTED'
             else:
                 requests_processed.add(row['workflow_exec_id'])
-                if pd.isnull(row['enquiry_sent_at']):
+                if pd.isnull(row['followup_sent_at']):
                     self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
                     self.df.at[index, 'response_message'] = None
                     self.df.at[index, 'response_timestamp'] = None
