@@ -1,9 +1,8 @@
 {
     "workflow_run": {
-        "id": "261ce250-19c4-45b4-9697-0b328412a9ec",
-        "exec_id": "2piU0W8eOvTg51Av6x4gsPdffUI",
+        "id": "2piU0W8eOvTg51Av6x4gsPdffUI",
         "trace_id": "1938da36f6035ed4",
-        "parent_exec_id": null,
+        "parent_id": null,
         "workflow_id": "p_n1C1DKG",
         "workflow_name": "Asset Not Assigned [Shipment Update]",
         "workflow_version": "d_ObsOvbyn",
@@ -28,7 +27,7 @@
     "workflow_audit": [
         {
             "id": "d77866d1-aa33-4975-bd86-715015c0f1a0",
-            "thread_id": "1938da36f6035ed4",
+            "request_id": "1938da36f6035ed4",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,
@@ -46,7 +45,7 @@
         },
         {
             "id": "649ec359-1559-4266-b9f0-2d581425d3e8",
-            "thread_id": "1938da36f6035ed4",
+            "request_id": "1938da36f6035ed4",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,
@@ -64,7 +63,7 @@
         },
         {
             "id": "f30d74f6-b72d-4989-895b-d5d659f4f806",
-            "thread_id": "1938da36f6035ed4",
+            "request_id": "1938da36f6035ed4",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,

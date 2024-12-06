@@ -1,9 +1,8 @@
 {
     "workflow_run": {
-        "id": "51d60d35-3a53-428d-9714-e72dc0dbb9e7",
-        "exec_id": "2piTv0181mPuUKB3ZE7o2Yn8KqT",
+        "id": "2piTv0181mPuUKB3ZE7o2Yn8KqT",
         "trace_id": "1938da36f6035ed4",
-        "parent_exec_id": null,
+        "parent_id": null,
         "workflow_id": "p_13CvYnN",
         "workflow_name": "Parent Classifier Workflow - CY",
         "workflow_version": "d_MOsAQBnp",
@@ -28,7 +27,7 @@
     "workflow_audit": [
         {
             "id": "011aaf12-f30e-43a2-89f3-cbfa82f8f78e",
-            "thread_id": "1938da36f6035ed4",
+            "request_id": "1938da36f6035ed4",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,
@@ -46,7 +45,7 @@
         },
         {
             "id": "3e7e6544-d20a-4de4-9b38-f3766f5f3eb8",
-            "thread_id": "1938da36f6035ed4",
+            "request_id": "1938da36f6035ed4",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,

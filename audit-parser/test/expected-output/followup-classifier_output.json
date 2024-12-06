@@ -1,9 +1,8 @@
 {
   "workflow_run": {
-    "id": "4026b014-3b43-48ee-b963-62a35c523221",
-    "exec_id": "2piTJnPzAhptwXlszRhZwXb5nUF",
+    "id": "2piTJnPzAhptwXlszRhZwXb5nUF",
     "trace_id": "1938d9d7ab13b330",
-    "parent_exec_id": null,
+    "parent_id": null,
     "workflow_id": "p_13CvYnN",
     "workflow_version": "d_MOsAQBnp",
     "platform_version": "3.52.0",
@@ -27,7 +26,7 @@
   "workflow_audit": [
     {
       "id": "b8712415-79db-4ac2-a45e-f73fde3ad408",
-      "thread_id": "1938d9d7ab13b330",
+      "request_id": "1938d9d7ab13b330",
       "shipper_id": "test-qa-demo-shipper",
       "agent_id": "TRACY",
       "entity_type": "EMAIL",
@@ -42,7 +41,7 @@
       "action_timestamp": "2024-12-03T17:41:55.000Z"
     },
     {
-      "thread_id": "1938d9d7ab13b330",
+      "request_id": "1938d9d7ab13b330",
       "shipper_id": "test-qa-demo-shipper",
       "agent_id": "TRACY",
       "entity_type": "EMAIL",
@@ -66,7 +65,7 @@
     },
     {
       "id": "e6ca190a-7df1-4329-955d-11c7128a358b",
-      "thread_id": "1938d9d7ab13b330",
+      "request_id": "1938d9d7ab13b330",
       "shipper_id": "test-qa-demo-shipper",
       "agent_id": "TRACY",
       "entity_type": "CLASSIFIER_BRANCH",

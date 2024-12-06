@@ -621,7 +621,7 @@
                     "workflow_id": "parent_classifier_workflow",
                     "audit": [
                         {
-                            "thread_id": "1938d9d7ab13b330",
+                            "request_id": "1938d9d7ab13b330",
                             "shipper_id": "test-qa-demo-shipper",
                             "agent_id": "TRACY",
                             "entity_type": "EMAIL",

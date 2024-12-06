@@ -48,7 +48,7 @@ class Parser:
             "agent_id": email_event_data.get("agent_id", ""),
 
             "trigger_type": email_event_data.get("type", ""),
-            "thread_id": email_event_data.get("id", ""),
+            "request_id": email_event_data.get("id", ""),
             "error": error
         }
 
@@ -81,7 +81,7 @@ class Parser:
             final_comment = summary if summary else final_comment
             workflow_audit.append({
                 "id": str(uuid4()),
-                "thread_id": trigger_data["thread_id"], # same as trigger id at workflow run level
+                "request_id": trigger_data["thread_id"], # same as trigger id at workflow run level
 
                 "shipper_id": trigger_data["shipper_id"],
                 "agent_id": trigger_data["agent_id"],
@@ -124,11 +124,10 @@ class Parser:
         workflow_audit = step_data["workflow_audit"]
 
         workflow_run = {
-            "id": str(uuid4()),
-            "exec_id": self.data.get("id"),
+            "id": self.data.get("id"),
             # "trace_id": self.data.get("request_id"),
             "trace_id": trigger_data["thread_id"], 
-            "parent_exec_id": None, # TODO: Get this for identifying child workflows
+            "parent_id": None, # TODO: Get this for identifying child workflows
 
             "workflow_id": self.data.get("workflow_id"),
             "workflow_name": trigger_data["workflow_name"],

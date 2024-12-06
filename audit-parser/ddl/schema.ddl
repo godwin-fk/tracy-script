@@ -1,8 +1,7 @@
 CREATE TABLE "workflow_run" (
     "id" VARCHAR PRIMARY KEY,
-    "exec_id" VARCHAR,
     "trace_id" VARCHAR,
-    "parent_exec_id" VARCHAR,
+    "parent_id" VARCHAR,
 
     "workflow_id" VARCHAR,
     "workflow_version" VARCHAR,
@@ -39,7 +38,7 @@ CREATE INDEX idx_created_shipper_workflow ON "workflow_run" (created_at, shipper
 
 CREATE TABLE "workflow_audit" (
   "id" VARCHAR PRIMARY KEY,
-  "thread_id" VARCHAR,
+  "request_id" VARCHAR,
 
   "shipper_id" VARCHAR,
   "agent" VARCHAR,
@@ -59,5 +58,5 @@ CREATE TABLE "workflow_audit" (
   "created_at" TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
-CREATE INDEX idx_thread_id ON "workflow_audit" ("thread_id");
-CREATE INDEX idx_timestamp_action ON "workflow_audit" ("action_timestamp", "action_id");
+CREATE INDEX idx_request_id ON "workflow_audit" ("request_id");
+CREATE INDEX idx_timestamp_step ON "workflow_audit" ("action_timestamp", "step_id");

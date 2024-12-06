@@ -1,9 +1,8 @@
 {
     "workflow_run": {
-        "id": "061de337-00ed-45b6-9313-b798de7f980a",
-        "exec_id": "2piT9dvqKuO19KMov8x28K0yTmt",
+        "id": "2piT9dvqKuO19KMov8x28K0yTmt",
         "trace_id": "1938d9d7ab13b330",
-        "parent_exec_id": null,
+        "parent_id": null,
         "workflow_id": "p_MOCjgJ1",
         "workflow_name": "Asset Not Assigned [Carrier Follow Up]",
         "workflow_version": "d_Eksebkg3",
@@ -28,7 +27,7 @@
     "workflow_audit": [
         {
             "id": "55b2cb8f-7553-4e8f-994e-a8b7f435b250",
-            "thread_id": "1938d9d7ab13b330",
+            "request_id": "1938d9d7ab13b330",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,
@@ -46,7 +45,7 @@
         },
         {
             "id": "16f64fd3-6b32-4a0e-8c8c-99880801a338",
-            "thread_id": "1938d9d7ab13b330",
+            "request_id": "1938d9d7ab13b330",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,
@@ -64,7 +63,7 @@
         },
         {
             "id": "898c7e96-563a-4655-84e3-92f4d9b729da",
-            "thread_id": "1938d9d7ab13b330",
+            "request_id": "1938d9d7ab13b330",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,
@@ -82,7 +81,7 @@
         },
         {
             "id": "3e42d35c-a829-4ddb-b537-37c05d695d9b",
-            "thread_id": "1938d9d7ab13b330",
+            "request_id": "1938d9d7ab13b330",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,
@@ -100,7 +99,7 @@
         },
         {
             "id": "8d46ac72-0ab6-4856-845a-fc7c5cd34700",
-            "thread_id": "1938d9d7ab13b330",
+            "request_id": "1938d9d7ab13b330",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,
@@ -118,7 +117,7 @@
         },
         {
             "id": "f54fac4c-561c-4d5d-88f3-8312e00fe192",
-            "thread_id": "1938d9d7ab13b330",
+            "request_id": "1938d9d7ab13b330",
             "shipper_id": "test-qa-demo-shipper",
             "agent_id": "TRACY",
             "entity_type": null,
