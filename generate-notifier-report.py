@@ -195,12 +195,12 @@ def convert_date_to_custom_format(date_str):
 
 if __name__ == "__main__":
     shipper_id = 'smithfield-foods'
-    start_date = '2024-11-07'
-    end_date = '2024-11-07'
+    start_date = '2024-12-05'
+    end_date = '2024-12-05'
     workflow_identifier = 'notifier'
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year
-    current_date = f'./dist/{shipper_id}-final-notifier_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
+    current_date = f'./dist/{shipper_id}-notifier_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
     flag=True
     main_process = Main(shipper_id, start_date, end_date,workflow_identifier,current_date,flag)
     main_process.run()
