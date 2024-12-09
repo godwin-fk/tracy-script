@@ -104,7 +104,7 @@ class GmailDataProcessor:
     @ staticmethod
     def merge_xlsx_files(directory, received_dates):
         """Merge all Excel files in a directory into a single workbook."""
-        output_file = os.path.join('tmp', "merged_holdover_reports.xlsx")
+        output_file = os.path.join('./tmp', "merged_holdover_reports.xlsx")
 
         merged_workbook = Workbook()
         merged_sheet = merged_workbook.active
@@ -203,16 +203,16 @@ class GmailDataProcessor:
         self.clean_excel(input_file, output_file)
         self.update_headers(output_file)
         shipper_id_holdover = f"{self.shipper_id}-holdover"
-        csv_filepath = f"tmp/{shipper_id_holdover}-{start_date}_{end_date}.csv"
+        csv_filepath = f"./tmp/{shipper_id_holdover}-{start_date}_{end_date}.csv"
         self.convert_excel_to_csv(output_file, csv_filepath)
 
 
 # if __name__ == "__main__":
 #     processor = GmailDataProcessor("smithfield_foods", "TRACY")
-#     output_file = "tmp/output_data.xlsx"
+#     output_file = "./tmp/output_data.xlsx"
 #     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 #     processor.process_emails(
-#         save_path="tmp/attachments",
+#         save_path="./tmp/attachments",
 #         output_file=output_file,
 #         start_date="2024-12-05",
 #         end_date="2024-12-05"

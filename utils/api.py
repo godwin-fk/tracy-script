@@ -34,6 +34,7 @@ class CarrierUpdater:
              
     # RTP: Update carrier info
     def update_carrier_info(self,load_responses):
+        print("Processing carrier info...")
         if(len(load_responses) > 0):
             for load_details in load_responses:
                 load_id = load_details.get("loadNumber", "")
@@ -43,7 +44,6 @@ class CarrierUpdater:
                     "carrier": carrier_name,
                     "scac": scac
                 }
-                print(load_id, " ->> ", {"carrier": carrier_name, "scac": scac})
             self.df['carrier'] = self.df['Load Number'].map(
                 lambda load_id: self.carrier_info_dict.get(load_id, {}).get('carrier', "")
             )
@@ -68,7 +68,6 @@ class CarrierUpdater:
                     "carrier": carrier_name,
                     "scac": scac
                 }
-                print(load_id, " ->> ", {"carrier": carrier_name, "scac": scac})
             self.df['carrier'] = self.df['load_id'].map(
                 lambda load_id: self.carrier_info_dict.get(load_id, {}).get('carrier', "")
             )

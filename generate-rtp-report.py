@@ -48,7 +48,7 @@ class Main:
             lambda row: (row['Response At'] - row['Followup Sent At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
             axis=1
         )
-        df = df[['Load Number','CARRIER','CONTAINER ID','DESTINATION CITY','DESTINATION STATE','DD DATE','DD TIME','BILL DATE','BILL TIME','ZDLT LATE CODE','ON TIME? (Y/N)','SPLIT? (Y/N)','FRESH PRIORITY STO? (Y/N)','NOTES/COMMENTS','Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Trigger Message','Response Message','Triggered At','Followup Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
+        df = df[['Load Number','CARRIER','CONTAINER ID','DESTINATION CITY','DESTINATION STATE','DD DATE','DD TIME','BILL DATE','BILL TIME','ZDLT LATE CODE','ON TIME? (Y/N)','SPLIT? (Y/N)','FRESH PRIORITY STO? (Y/N)','NOTES/COMMENTS', 'FACILITY', 'DATE' ,'Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Trigger Message','Response Message','Triggered At','Followup Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
     
         self.df = df
         # Save the updated CSV file
@@ -98,9 +98,11 @@ class Main:
         )
         df_db2.loc[df_db2['status'] == 'escalation_l2_sent', ['reminder', 'escalated']] = 'Y'
 
-        # TODO: Handle if no records in df_db2
-        # Drop unnecessary columns
-        df_db2 = df_db2.drop(columns=['status', 'comments'])
+
+        if 'status' and 'comments' in df_db2.columns:
+            df_db2 = df_db2.drop(columns=['status', 'comments'])
+        else:
+            print('Columns empty in df_db2')
 
         self.df= pd.merge(df_db1, df_db2, on=['load_id'], how='left')
 
@@ -140,7 +142,9 @@ class Main:
         # Load the CSV files into DataFrames
         df1 = pd.read_csv(holdover,dtype={join_column: 'Int64'})
         df2 = pd.read_csv(filename,dtype={'load_id': 'Int64'})
-
+        unnamed_cols = df1.columns[df1.columns.str.startswith('Unnamed')]
+        if len(unnamed_cols) >= 2:
+            df1.rename(columns={unnamed_cols[-2]: 'FACILITY', unnamed_cols[-1]: 'DATE'}, inplace=True)
 
         requests_processed = set()
         rows_to_remove = set()
@@ -194,10 +198,6 @@ class Main:
 
         query_2 = get_milestones_query(self.shipper_id, self.workflow_identifier, self.start_date, self.end_date)
         df_db2 = self.fetch_data(self.db2_url, query_2)
-
-        # save df_1 and df_2 to csv
-        df_db1.to_csv(f"./tmp/tracy_{self.current_date}_db1.csv", index=False)
-        df_db2.to_csv(f"./tmp/tracy_{self.current_date}_db2.csv", index=False)
         
         # here self.df is the merged data of df1 and df2
         self.process_data(df_db1, df_db2)
@@ -256,24 +256,28 @@ if __name__ == "__main__":
     end_date = '2024-12-05'
     workflow_identifier = 'ready_to_pickup'
 
-    output_file = "tmp/output_data.xlsx"
+    output_file = "./tmp/output_data.xlsx"
+    save_path="./tmp/attachments"
+    
+    date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+    year = date_obj.year
+    output_csv_path = f'./dist/{shipper_id}-rtp-report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    os.makedirs(os.path.dirname(output_csv_path), exist_ok=True)
     
     processor = GmailDataProcessor(shipper_id, agent_id)
     processor.process_emails(
-        save_path="tmp/attachments",
+        save_path=save_path,
         output_file=output_file,
         start_date=start_date,
         end_date=end_date
     )
     
     #From tmp folder after processing the emails:
-    holdover = f"./tmp/{shipper_id}-holdover-{start_date}_{end_date}.csv"
+    holdover_shipper_id = shipper_id.replace('-', '_')
+    holdover = f"./tmp/{holdover_shipper_id}-holdover-{start_date}_{end_date}.csv"
     print('The holdover: ',holdover)
-    
-    date_obj = datetime.strptime(start_date, '%Y-%m-%d')
-    year = date_obj.year
-    output_csv_path = f'./dist/{shipper_id}-rtp-report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
     
     flag=True
     main_process = Main(
