@@ -201,6 +201,7 @@ if __name__ == "__main__":
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year
     current_date = f'./dist/{shipper_id}-notifier_report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
+    os.makedirs('./dist', exist_ok=True)
     flag=True
     main_process = Main(shipper_id, start_date, end_date,workflow_identifier,current_date,flag)
     main_process.run()
