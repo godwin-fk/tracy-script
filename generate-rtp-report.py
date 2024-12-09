@@ -7,6 +7,7 @@ from datetime import datetime
 import re
 from utils.queries import get_rtp_agentic_audit_logs_query,get_milestones_query
 from utils.api import CarrierUpdater
+from utils.get_holdover import GmailDataProcessor
 from dotenv import load_dotenv
 load_dotenv()
 class Main:
@@ -39,15 +40,15 @@ class Main:
         df = pd.read_csv(filename)
 
         # Convert Triggered At and Response At columns to datetime format
-        df['Followup Sent At'] = pd.to_datetime(df['Followup Sent At'], errors='coerce')
+        df['Enquiry Sent At'] = pd.to_datetime(df['Enquiry Sent At'], errors='coerce')
         df['Response At'] = pd.to_datetime(df['Response At'], errors='coerce')
 
         # Calculate Response Delay (mins) in minutes
         df['Response Delay (mins)'] = df.apply(
-            lambda row: (row['Response At'] - row['Followup Sent At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
+            lambda row: (row['Response At'] - row['Enquiry Sent At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
             axis=1
         )
-        df = df[['Load Number','CARRIER','CONTAINER ID','DESTINATION CITY','DESTINATION STATE','DD DATE','DD TIME','BILL DATE','BILL TIME','ZDLT LATE CODE','ON TIME? (Y/N)','SPLIT? (Y/N)','FRESH PRIORITY STO? (Y/N)','NOTES/COMMENTS','Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Trigger Message','Response Message','Triggered At','Followup Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
+        df = df[['Load Number','CARRIER','CONTAINER ID','DESTINATION CITY','DESTINATION STATE','DD DATE','DD TIME','BILL DATE','BILL TIME','ZDLT LATE CODE','ON TIME? (Y/N)','SPLIT? (Y/N)','FRESH PRIORITY STO? (Y/N)','NOTES/COMMENTS','Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Trigger Message','Response Message','Triggered At','Enquiry Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
     
         self.df = df
         # Save the updated CSV file
@@ -70,7 +71,7 @@ class Main:
             'actions': 'Update Actions',
             'reminder': 'Reminder',
             'escalated': 'Escalated',
-            'followup_sent_at': 'Followup Sent At'
+            'enquiry_sent_at': 'Enquiry Sent At'
         })
 
         self.df['Triggered At'] = pd.to_datetime(self.df['Triggered At'])
@@ -101,14 +102,14 @@ class Main:
 
         self.df= pd.merge(df_db1, df_db2, on=['load_id'], how='left')
 
-        self.df['followup_sent_at'] = pd.to_datetime(self.df['followup_sent_at'])
+        self.df['enquiry_sent_at'] = pd.to_datetime(self.df['enquiry_sent_at'])
         self.df['trigger_timestamp'] = pd.to_datetime(self.df['trigger_timestamp'])
 
         # remove rows & update status as TRIGGER_SKIPPED as applicable
         requests_processed = set()
         rows_to_remove = set()
         for index, row in self.df.iterrows():
-            if not pd.isnull(row['followup_sent_at']) and (row['followup_sent_at'] < row['trigger_timestamp'] or (row['followup_sent_at'] - row['trigger_timestamp']).total_seconds() > 120) :
+            if not pd.isnull(row['enquiry_sent_at']) and (row['enquiry_sent_at'] < row['trigger_timestamp'] or (row['enquiry_sent_at'] - row['trigger_timestamp']).total_seconds() > 120) :
                 rows_to_remove.add(index)
                 self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
                 self.df.at[index, 'response_message'] = None
@@ -116,7 +117,7 @@ class Main:
                 self.df.at[index, 'actions'] = 'DETAILS_EXTRACTED'
             else:
                 requests_processed.add(row['workflow_exec_id'])
-                if pd.isnull(row['followup_sent_at']):
+                if pd.isnull(row['enquiry_sent_at']):
                     self.df.at[index, 'status'] = 'TRIGGER_SKIPPED'
                     self.df.at[index, 'response_message'] = None
                     self.df.at[index, 'response_timestamp'] = None
@@ -169,7 +170,7 @@ class Main:
 
         # Update the 'NOTES/COMMENTS' column based on conditions
         df['NOTES/COMMENTS'] = df.apply(
-            lambda row: 'Email not sent' if pd.isnull(row['Followup Sent At'])
+            lambda row: 'Email not sent' if pd.isnull(row['Enquiry Sent At'])
             else 'Email sent and awaiting response' if pd.isnull(row['Response At'])
             else 'Email sent and response processed' if '_UPDATED' in row['Update Actions'].upper()
             else 'Email sent and response not processed',
@@ -192,6 +193,10 @@ class Main:
         query_2 = get_milestones_query(self.shipper_id, self.workflow_identifier, self.start_date, self.end_date)
         df_db2 = self.fetch_data(self.db2_url, query_2)
 
+        # save df_1 and df_2 to csv
+        df_db1.to_csv(f"./temp/tracy_{self.current_date}_db1.csv", index=False)
+        df_db2.to_csv(f"./temp/tracy_{self.current_date}_db2.csv", index=False)
+        
         # here self.df is the merged data of df1 and df2
         self.process_data(df_db1, df_db2)
         # save to file: 
@@ -242,16 +247,41 @@ def convert_date_to_custom_format(date_str):
 
 
 if __name__ == "__main__":
-    shipper_id = 'smithfield-foods'
-    start_date = '2024-11-07'
-    end_date = '2024-11-07'
+    # Define the parameters
+    shipper_id = 'smithfield_foods'
+    agent_id = 'TRACY'
+    start_date = '2024-12-05'
+    end_date = '2024-12-05'
     workflow_identifier = 'ready_to_pickup'
-    #coming from temp folder :
+    
+    
+    output_file = "temp/output_data.xlsx"
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    
+    processor = GmailDataProcessor(shipper_id, agent_id)
+    processor.process_emails(
+        save_path="attachments",
+        output_file=output_file,
+        start_date=start_date,
+        end_date=end_date
+    )
+    
+    #From temp folder after processing the emails:
     holdover = f"./temp/{shipper_id}-holdover-{start_date}_{end_date}.csv"
     print('The holdover: ',holdover)
+    
     date_obj = datetime.strptime(start_date, '%Y-%m-%d')
     year = date_obj.year
     output_csv_path = f'./dist/{shipper_id}-final-rtp-report_{convert_date_to_custom_format(start_date)}_{convert_date_to_custom_format(end_date)}{year}.csv'
+    
     flag=True
-    main_process = Main(shipper_id, start_date, end_date,workflow_identifier,holdover,output_csv_path,flag)
+    main_process = Main(
+        shipper_id, 
+        start_date, 
+        end_date, 
+        workflow_identifier, 
+        holdover, 
+        output_csv_path, 
+        flag
+    )
     main_process.run()
