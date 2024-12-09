@@ -81,40 +81,72 @@ def search_emails_with_attachments(gmail_service, query, save_path):
                         print(f"Downloaded Attachment: {part['filename']}")
     except HttpError as error:
         print(f"An error occurred: {error}")
+        
+def merge_xlsx_files(directory, output_file="./temp/merged_holdover_reports.xlsx"):
+        temp_directory = os.path.dirname(output_file)
+        os.makedirs(temp_directory, exist_ok=True)
+        """Merge all Excel files in a directory into a single workbook."""
+        
+        merged_workbook = Workbook()
+        merged_sheet = merged_workbook.active
+        merged_sheet.title = "Merged Data"
+        headers_written = False
+
+        merged_data = pd.DataFrame()
+        for file_name in os.listdir(directory):
+            if file_name.endswith(".xlsx"):
+                file_path = os.path.join(directory, file_name)
+                
+                df = pd.read_excel(file_path, sheet_name=0)
+                shipment_row_index = df[df.eq("PLANT:").any(axis=1)].index[0]
+                column_index = df.loc[shipment_row_index].eq("PLANT:").idxmax()
+                result_column_index = df.columns.get_loc(column_index) + 1
+                FACILITY = df.iloc[shipment_row_index, result_column_index]
+                
+                header_row_index = shipment_row_index + 2  
+                data = df.iloc[header_row_index:].reset_index(drop=True)
+                data.columns = df.iloc[header_row_index - 1]  # Set the proper headers
+
+                data['PLANT'] = FACILITY     
+
+                merged_data = pd.concat([merged_data, data], ignore_index=True)
+        merged_data.to_excel(output_file, index=False)
+        print(f"Merged file saved as: {output_file}")
+        return output_file
 
 
-def merge_xlsx_files(directory, output_file="../temp/merged_holdover_reports.xlsx"):
-    # Create a new workbook for the merged file
-    merged_workbook = Workbook()
-    merged_sheet = merged_workbook.active
-    merged_sheet.title = "Merged Data"
+# def merge_xlsx_files(directory, output_file="../temp/merged_holdover_reports.xlsx"):
+#     # Create a new workbook for the merged file
+#     merged_workbook = Workbook()
+#     merged_sheet = merged_workbook.active
+#     merged_sheet.title = "Merged Data"
     
-    # Flag to track if headers have been written to the merged file
-    headers_written = False
+#     # Flag to track if headers have been written to the merged file
+#     headers_written = False
 
-    # Iterate over all files in the directory
-    for file_name in os.listdir(directory):
-        if file_name.endswith(".xlsx"):
-            file_path = os.path.join(directory, file_name)
-            print(f"Processing: {file_path}")
+#     # Iterate over all files in the directory
+#     for file_name in os.listdir(directory):
+#         if file_name.endswith(".xlsx"):
+#             file_path = os.path.join(directory, file_name)
+#             print(f"Processing: {file_path}")
             
-            # Open the workbook
-            workbook = load_workbook(file_path)
-            sheet = workbook.active  # Assuming data is in the first sheet
+#             # Open the workbook
+#             workbook = load_workbook(file_path)
+#             sheet = workbook.active  # Assuming data is in the first sheet
 
-            # Read data from the current workbook
-            for row_index, row in enumerate(sheet.iter_rows(values_only=True), start=1):
-                # Write headers only once
-                if row_index == 1 and headers_written:
-                    continue
-                merged_sheet.append(row)
+#             # Read data from the current workbook
+#             for row_index, row in enumerate(sheet.iter_rows(values_only=True), start=1):
+#                 # Write headers only once
+#                 if row_index == 1 and headers_written:
+#                     continue
+#                 merged_sheet.append(row)
             
-            headers_written = True  # Headers have now been written
+#             headers_written = True  # Headers have now been written
     
-    # Save the merged workbook
-    merged_workbook.save(output_file)
-    print(f"Merged file saved as: {output_file}")
-    return output_file
+#     # Save the merged workbook
+#     merged_workbook.save(output_file)
+#     print(f"Merged file saved as: {output_file}")
+#     return output_file
 
 
 def clean_excel(file_path: str, output_path: str):
@@ -204,8 +236,8 @@ if __name__ == "__main__":
 
     search_query = f'holdover OR "hold over" has:attachment in:anywhere after:{start_timestamp} before:{end_timestamp}'
 
-    gmail_service = get_gmail_service(shipper_id, agent_id)
-    search_emails_with_attachments(gmail_service, search_query, save_path)
+    # gmail_service = get_gmail_service(shipper_id, agent_id)
+    # search_emails_with_attachments(gmail_service, search_query, save_path)
 
     input_file = merge_xlsx_files(save_path)
     clean_excel(input_file, output_file)
@@ -213,4 +245,3 @@ if __name__ == "__main__":
     
     shipper_id_holdover = f'{shipper_id}-holdover'
     convert_excel_to_csv(output_file, shipper_id_holdover, start_date, end_date)
-
