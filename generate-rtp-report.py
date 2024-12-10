@@ -48,7 +48,7 @@ class Main:
             lambda row: (row['Response At'] - row['Followup Sent At']).total_seconds() / 60 if pd.notnull(row['Response At']) else None,
             axis=1
         )
-        df = df[['Load Number','CARRIER','CONTAINER ID','DESTINATION CITY','DESTINATION STATE','DD DATE','DD TIME','BILL DATE','BILL TIME','ZDLT LATE CODE','ON TIME? (Y/N)','SPLIT? (Y/N)','FRESH PRIORITY STO? (Y/N)','NOTES/COMMENTS', 'FACILITY', 'DATE' ,'Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Trigger Message','Response Message','Triggered At','Followup Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
+        df = df[['FACILITY','DATE', 'Load Number','CARRIER','CONTAINER ID','DESTINATION CITY','DESTINATION STATE','DD DATE','DD TIME','BILL DATE','BILL TIME','ZDLT LATE CODE','ON TIME? (Y/N)','SPLIT? (Y/N)','FRESH PRIORITY STO? (Y/N)','NOTES/COMMENTS', 'Workflow','Workflow Execution Id','Shipper', 'Carrier','Carrier SCAC','Trigger Message','Response Message','Triggered At','Followup Sent At','Response At','Response Delay (mins)','Update Actions','Status','Reminder','Escalated']]
     
         self.df = df
         # Save the updated CSV file

@@ -133,15 +133,11 @@ class GmailDataProcessor:
 
                 data = df.iloc[header_row_index+1:].reset_index(drop=True)
                 data.columns = headers  
-                # data.columns = df.iloc[header_row_index]  # Set the proper headers
     
                 data['PLANT'] = FACILITY 
                 if file_path in received_dates:
                     data['RECEIVED DATE'] = received_dates[file_path]    
                     
-                # data.rename( columns={'Unnamed: 14':'PLANT'}, inplace=True )
-                # data.rename( columns={'Unnamed: 15':'RECEIVED DATE'}, inplace=True )
-
                 merged_data = pd.concat([merged_data, data], ignore_index=True)
         merged_data.to_excel(output_file, index=False)
         print(f"Merged file saved as: {output_file}")
