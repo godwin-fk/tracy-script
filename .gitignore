@@ -8,3 +8,5 @@ __pycache__/
 /dist
 /venv
 /.vscode
+audit-parser/test/output
+audit-parser/output
